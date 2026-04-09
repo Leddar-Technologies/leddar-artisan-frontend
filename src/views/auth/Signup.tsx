@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useApp } from "../../context/AppContext";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
@@ -10,7 +9,6 @@ import { UserPlus, Upload, CheckCircle, Mail } from "lucide-react";
 
 export default function Signup() {
   const { signup } = useApp();
-  const router = useRouter();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",

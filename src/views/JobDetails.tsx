@@ -23,6 +23,7 @@ import {
   Upload,
   Video,
 } from "lucide-react";
+import type { JobStatus } from "../types";
 
 interface JobDetailsProps {
   jobId: string;
@@ -35,7 +36,7 @@ interface ActivityEntry {
   images: string[];
   videos: string[];
   createdAt: string;
-  status: string;
+  status: JobStatus;
 }
 
 export default function JobDetails({ jobId, onBack }: JobDetailsProps) {

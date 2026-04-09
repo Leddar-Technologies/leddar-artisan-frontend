@@ -1,8 +1,13 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from 'react';
-import { User, Job, Payment, Notification } from '../types';
-import { mockUser, mockJobs, mockPayments, mockNotifications } from '../data/mockData';
+import { createContext, useContext, useState, type ReactNode } from "react";
+import { User, Job, Payment, Notification } from "../types";
+import {
+  mockUser,
+  mockJobs,
+  mockPayments,
+  mockNotifications,
+} from "../data/mockData";
 
 interface AppContextType {
   isAuthenticated: boolean;
@@ -14,7 +19,7 @@ interface AppContextType {
   signup: (userData: Partial<User>, password: string) => boolean;
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
-  updateJobStatus: (jobId: string, status: Job['status']) => void;
+  updateJobStatus: (jobId: string, status: Job["status"]) => void;
   markNotificationAsRead: (notificationId: string) => void;
   updateKYC: (kycData: Partial<User>) => void;
 }
@@ -25,8 +30,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [jobs, setJobs] = useState<Job[]>(mockJobs);
-  const [payments, setPayments] = useState<Payment[]>(mockPayments);
-  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
+  const [payments] = useState<Payment[]>(mockPayments);
+  const [notifications, setNotifications] =
+    useState<Notification[]>(mockNotifications);
 
   const login = (email: string, password: string) => {
     if (email && password) {
@@ -41,12 +47,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (userData.email && password) {
       const newUser: User = {
         id: Math.random().toString(),
-        fullName: userData.fullName || '',
+        fullName: userData.fullName || "",
         email: userData.email,
-        phone: userData.phone || '',
-        whatsapp: userData.whatsapp || '',
-        specialty: userData.specialty || '',
-        kycStatus: 'pending',
+        phone: userData.phone || "",
+        whatsapp: userData.whatsapp || "",
+        specialty: userData.specialty || "",
+        kycStatus: "pending",
       };
       setUser(newUser);
       setIsAuthenticated(true);
@@ -66,15 +72,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const updateJobStatus = (jobId: string, status: Job['status']) => {
-    setJobs(jobs.map(job => job.id === jobId ? { ...job, status } : job));
+  const updateJobStatus = (jobId: string, status: Job["status"]) => {
+    setJobs(jobs.map((job) => (job.id === jobId ? { ...job, status } : job)));
   };
 
   const markNotificationAsRead = (notificationId: string) => {
     setNotifications(
-      notifications.map(notif =>
-        notif.id === notificationId ? { ...notif, read: true } : notif
-      )
+      notifications.map((notif) =>
+        notif.id === notificationId ? { ...notif, read: true } : notif,
+      ),
     );
   };
 
@@ -109,7 +115,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 export function useApp() {
   const context = useContext(AppContext);
   if (!context) {
-    throw new Error('useApp must be used within AppProvider');
+    throw new Error("useApp must be used within AppProvider");
   }
   return context;
 }
