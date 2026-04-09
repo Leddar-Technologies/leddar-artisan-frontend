@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	html,
+	body {
+		@apply min-h-full bg-cream text-ink;
+	}
+
+	body {
+		background-image:
+			radial-gradient(circle at 8% 4%, #ffffff22 0%, transparent 28%),
+			radial-gradient(circle at 92% 18%, #ffffff12 0%, transparent 25%),
+			linear-gradient(180deg, #fdfbf9 0%, #faf7f4 45%, #f4eee9 100%);
+	}
+}
+
+@layer utilities {
+	.page-shell {
+		@apply rounded-2xl border border-surface-400/70 bg-white/80 backdrop-blur-sm shadow-card;
+	}
+}
