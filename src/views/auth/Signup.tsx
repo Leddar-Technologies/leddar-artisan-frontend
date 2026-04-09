@@ -246,20 +246,12 @@ export default function Signup() {
 
               <Input
                 type="tel"
-                label="Phone Number"
+                label="WhatsApp Number"
                 placeholder="+234 801 234 5678"
-                value={formData.phone}
-                onChange={(e) => handleChange("phone", e.target.value)}
+                value={formData.whatsapp}
+                onChange={(e) => handleChange("whatsapp", e.target.value)}
               />
             </div>
-
-            <Input
-              type="tel"
-              label="WhatsApp Number"
-              placeholder="+234 801 234 5678"
-              value={formData.whatsapp}
-              onChange={(e) => handleChange("whatsapp", e.target.value)}
-            />
 
             <div className="border-t border-surface-400 pt-5">
               <div className="flex items-center gap-2 mb-3">

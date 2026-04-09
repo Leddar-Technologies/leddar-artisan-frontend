@@ -1,22 +1,24 @@
 "use client";
 
-import { Bell, LogOut, Menu } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import Badge from '../ui/Badge';
+import { LogOut, Menu } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface HeaderProps {
   userName: string;
-  unreadCount: number;
   onLogout: () => void;
   onMenuToggle: () => void;
 }
 
-export default function Header({ userName, unreadCount, onLogout, onMenuToggle }: HeaderProps) {
+export default function Header({
+  userName,
+  onLogout,
+  onMenuToggle,
+}: HeaderProps) {
   const router = useRouter();
 
   const handleLogout = () => {
     onLogout();
-    router.push('/login');
+    router.push("/login");
   };
 
   return (
@@ -32,25 +34,16 @@ export default function Header({ userName, unreadCount, onLogout, onMenuToggle }
           </button>
 
           <div className="min-w-0">
-            <h2 className="text-sm sm:text-xl font-semibold text-ink leading-tight">Welcome back, {userName}</h2>
-            <p className="text-[11px] sm:text-sm text-neutral-700 leading-snug hidden sm:block">Manage your jobs and track your earnings</p>
+            <h2 className="text-sm sm:text-xl font-semibold text-ink leading-tight">
+              Welcome back, {userName}
+            </h2>
+            <p className="text-[11px] sm:text-sm text-neutral-700 leading-snug hidden sm:block">
+              Manage your jobs and track your earnings
+            </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <button
-            onClick={() => router.push('/notifications')}
-            className="relative p-2 hover:bg-surface-100 rounded-lg transition-colors"
-            aria-label="Open notifications"
-          >
-            <Bell size={22} className="text-neutral-900" />
-            {unreadCount > 0 && (
-              <Badge variant="danger" size="sm" className="absolute -top-1 -right-1 min-w-[20px] h-5 flex items-center justify-center p-1">
-                {unreadCount}
-              </Badge>
-            )}
-          </button>
-
           <button
             onClick={handleLogout}
             className="flex items-center gap-2 px-3 sm:px-4 py-2 text-neutral-900 hover:bg-surface-100 rounded-lg transition-colors"

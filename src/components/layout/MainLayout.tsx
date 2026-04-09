@@ -1,21 +1,19 @@
 "use client";
 
-import { useState } from 'react';
-import type { ReactNode } from 'react';
-import Sidebar from './Sidebar';
-import Header from './Header';
+import { useState } from "react";
+import type { ReactNode } from "react";
+import Sidebar from "./Sidebar";
+import Header from "./Header";
 
 interface MainLayoutProps {
   children: ReactNode;
   userName: string;
-  unreadCount: number;
   onLogout: () => void;
 }
 
 export default function MainLayout({
   children,
   userName,
-  unreadCount,
   onLogout,
 }: MainLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -27,7 +25,6 @@ export default function MainLayout({
       <div className="flex-1 flex flex-col min-w-0">
         <Header
           userName={userName}
-          unreadCount={unreadCount}
           onLogout={onLogout}
           onMenuToggle={() => setIsSidebarOpen((prev) => !prev)}
         />

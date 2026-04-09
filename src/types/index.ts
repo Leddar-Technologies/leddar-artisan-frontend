@@ -5,7 +5,7 @@ export interface User {
   phone: string;
   whatsapp: string;
   specialty: string;
-  kycStatus: 'pending' | 'verified' | 'rejected';
+  kycStatus: "pending" | "verified" | "rejected";
   location?: string;
   bankAccount?: {
     accountName: string;
@@ -14,14 +14,24 @@ export interface User {
   };
 }
 
+export type JobType = "sample" | "production";
+export type JobStatus =
+  | "assigned"
+  | "in_progress"
+  | "video_uploaded"
+  | "completed"
+  | "declined";
+
 export interface Job {
   id: string;
+  jobType: JobType;
   productType: string;
   quantity: number;
   deadline: string;
-  status: 'assigned' | 'in_progress' | 'completed';
+  status: JobStatus;
   specifications: string;
   assignedDate: string;
+  referenceImages?: string[];
 }
 
 export interface Payment {
@@ -29,8 +39,8 @@ export interface Payment {
   jobId: string;
   date: string;
   amount: number;
-  stage: 'raw_material' | 'service';
-  status: 'pending' | 'released' | 'received';
+  stage: "raw_material" | "service";
+  status: "pending" | "released" | "received";
 }
 
 export interface Notification {
@@ -39,5 +49,5 @@ export interface Notification {
   message: string;
   date: string;
   read: boolean;
-  type: 'job' | 'payment' | 'system';
+  type: "job" | "payment" | "system";
 }
