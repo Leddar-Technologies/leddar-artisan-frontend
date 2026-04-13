@@ -12,6 +12,7 @@ export default function Signup() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
+    productionGender: "",
     specialty: "",
     email: "",
     phone: "",
@@ -19,6 +20,7 @@ export default function Signup() {
     password: "",
     confirmPassword: "",
   });
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState("");
   const [portfolioImages, setPortfolioImages] = useState<File[]>([]);
   const [portfolioError, setPortfolioError] = useState("");
@@ -69,11 +71,17 @@ export default function Signup() {
 
     if (
       !formData.fullName ||
+      !formData.productionGender ||
       !formData.specialty ||
       !formData.email ||
       !formData.password
     ) {
       setError("Please fill in all required fields");
+      return;
+    }
+
+    if (!acceptedTerms) {
+      setError("You must accept the Terms and Conditions to continue");
       return;
     }
 
@@ -95,6 +103,10 @@ export default function Signup() {
     const success = signup(
       {
         fullName: formData.fullName,
+        productionGender: formData.productionGender as
+          | "male"
+          | "female"
+          | "both",
         specialty: formData.specialty,
         email: formData.email,
         phone: formData.phone,
@@ -216,6 +228,24 @@ export default function Signup() {
 
               <div>
                 <label className="block text-sm font-medium text-neutral-900 mb-1.5">
+                  Gender You Can Produce For *
+                </label>
+                <select
+                  value={formData.productionGender}
+                  onChange={(e) =>
+                    handleChange("productionGender", e.target.value)
+                  }
+                  className="w-full px-4 py-2.5 border border-surface-500 rounded-xl bg-white/90 focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
+                >
+                  <option value="">Select option</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="both">Both</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-900 mb-1.5">
                   Skill/Specialty *
                 </label>
                 <select
@@ -224,11 +254,15 @@ export default function Signup() {
                   className="w-full px-4 py-2.5 border border-surface-500 rounded-xl bg-white/90 focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
                 >
                   <option value="">Select specialty</option>
-                  <option value="Footwear">Footwear</option>
-                  <option value="Bags">Bags & Accessories</option>
-                  <option value="Leather Goods">Leather Goods</option>
-                  <option value="Textiles">Textiles</option>
-                  <option value="Other">Other</option>
+                  <option value="Footwear - shoes and boots">
+                    Footwear - shoes and boots
+                  </option>
+                  <option value="Footwear - slippers, sandals and heels">
+                    Footwear - slippers, sandals and heels
+                  </option>
+                  <option value="Bags">Bags</option>
+                  <option value="Wallets, Belts">Wallets, Belts</option>
+                  <option value="Small goods">Small goods</option>
                 </select>
               </div>
             </div>
@@ -335,6 +369,19 @@ export default function Signup() {
                 }
               />
             </div>
+
+            <label className="flex items-start gap-3 rounded-xl border border-surface-400 bg-white/70 px-4 py-3">
+              <input
+                type="checkbox"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mt-1 h-4 w-4 rounded border-surface-500 text-leather focus:ring-gold/50"
+              />
+              <span className="text-sm text-neutral-900">
+                I agree to the Terms and Conditions and confirm that all
+                information provided is accurate. *
+              </span>
+            </label>
 
             {error && (
               <div className="bg-danger/10 text-danger border border-danger/30 px-4 py-3 rounded-xl text-sm">

@@ -4,6 +4,7 @@ export interface User {
   email: string;
   phone: string;
   whatsapp: string;
+  productionGender?: "male" | "female" | "both";
   specialty: string;
   kycStatus: "pending" | "verified" | "rejected";
   location?: string;
@@ -22,6 +23,14 @@ export type JobStatus =
   | "completed"
   | "declined";
 
+export type ReferenceImage =
+  | string
+  | {
+      label: string;
+      src?: string;
+      alt?: string;
+    };
+
 export interface Job {
   id: string;
   jobType: JobType;
@@ -31,7 +40,7 @@ export interface Job {
   status: JobStatus;
   specifications: string;
   assignedDate: string;
-  referenceImages?: string[];
+  referenceImages?: ReferenceImage[];
 }
 
 export interface Payment {

@@ -24,6 +24,10 @@ import {
   Video,
 } from "lucide-react";
 import type { JobStatus } from "../types";
+import {
+  getReferenceImageAlt,
+  getReferenceImageSrc,
+} from "../utils/referenceImages";
 
 interface JobDetailsProps {
   jobId: string;
@@ -371,16 +375,24 @@ export default function JobDetails({ jobId, onBack }: JobDetailsProps) {
             </CardHeader>
             <CardContent>
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                {(job.referenceImages || []).map((image) => (
-                  <div
-                    key={image}
-                    className="rounded-2xl border border-surface-400/70 bg-surface-100 p-4"
+                {(job.referenceImages || []).map((image, index) => (
+                  <figure
+                    key={
+                      typeof image === "string"
+                        ? image
+                        : `${image.label}-${index}`
+                    }
+                    className="overflow-hidden rounded-2xl border border-surface-400/70 bg-white shadow-sm"
                   >
-                    <div className="flex items-center gap-2 text-sm font-medium text-ink">
-                      <Image size={16} className="text-leather" />
-                      {image}
-                    </div>
-                  </div>
+                    <img
+                      src={getReferenceImageSrc(image)}
+                      alt={getReferenceImageAlt(image)}
+                      className="h-40 w-full object-cover"
+                    />
+                    <figcaption className="border-t border-surface-300 px-3 py-2 text-xs font-medium text-neutral-700">
+                      {getReferenceImageAlt(image)}
+                    </figcaption>
+                  </figure>
                 ))}
                 {(job.referenceImages || []).length === 0 && (
                   <p className="text-sm text-neutral-500">

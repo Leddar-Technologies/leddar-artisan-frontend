@@ -6,6 +6,7 @@ export const mockUser: User = {
   email: "john.adebayo@example.com",
   phone: "+234 801 234 5678",
   whatsapp: "+234 801 234 5678",
+  productionGender: "both",
   specialty: "Footwear",
   kycStatus: "verified",
   location: "Lagos, Nigeria",

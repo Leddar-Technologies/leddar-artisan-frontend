@@ -12,6 +12,10 @@ import Badge from "../components/ui/Badge";
 import Button from "../components/ui/Button";
 import { Calendar, Eye, Hash, Image, Package, Tag } from "lucide-react";
 import JobDetails from "./JobDetails";
+import {
+  getReferenceImageAlt,
+  getReferenceImageSrc,
+} from "../utils/referenceImages";
 
 type JobFilter = "all" | "sample" | "production";
 
@@ -263,15 +267,26 @@ export default function Jobs() {
                         <Image size={16} className="text-leather" />
                         Reference images
                       </div>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="grid gap-3 sm:grid-cols-3">
                         {(job.referenceImages || []).length > 0 ? (
-                          job.referenceImages!.map((image) => (
-                            <span
-                              key={image}
-                              className="rounded-full border border-surface-400 bg-surface-100 px-3 py-1 text-xs text-neutral-700"
+                          job.referenceImages!.map((image, index) => (
+                            <figure
+                              key={
+                                typeof image === "string"
+                                  ? image
+                                  : `${image.label}-${index}`
+                              }
+                              className="overflow-hidden rounded-2xl border border-surface-400/70 bg-white shadow-sm"
                             >
-                              {image}
-                            </span>
+                              <img
+                                src={getReferenceImageSrc(image)}
+                                alt={getReferenceImageAlt(image)}
+                                className="h-36 w-full object-cover"
+                              />
+                              <figcaption className="border-t border-surface-300 px-3 py-2 text-xs font-medium text-neutral-700">
+                                {getReferenceImageAlt(image)}
+                              </figcaption>
+                            </figure>
                           ))
                         ) : (
                           <p className="text-sm text-neutral-500">
