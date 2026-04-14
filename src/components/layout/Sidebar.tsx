@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Home, Briefcase, Wallet, User, FileCheck } from "lucide-react";
 
@@ -29,9 +30,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       >
         <div className="h-full flex flex-col">
           <div className="p-6 border-b border-white/10 bg-white/[0.05]">
-            <h1 className="text-2xl font-bold text-gold tracking-wide">
-              Leddar
-            </h1>
+            <Image
+              src="/leddar-logo.svg"
+              alt="Leddar"
+              width={160}
+              height={50}
+              className="h-10 w-auto"
+              priority
+            />
             <p className="text-sm text-white/70 mt-1">Artisan Dashboard</p>
           </div>
 

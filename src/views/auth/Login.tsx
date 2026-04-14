@@ -1,43 +1,51 @@
 "use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useApp } from '../../context/AppContext';
-import Input from '../../components/ui/Input';
-import Button from '../../components/ui/Button';
-import { LogIn } from 'lucide-react';
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useApp } from "../../context/AppContext";
+import Input from "../../components/ui/Input";
+import Button from "../../components/ui/Button";
+import { LogIn } from "lucide-react";
 
 export default function Login() {
   const { login } = useApp();
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (!email || !password) {
-      setError('Please fill in all fields');
+      setError("Please fill in all fields");
       return;
     }
 
     const success = login(email, password);
     if (!success) {
-      setError('Invalid credentials');
+      setError("Invalid credentials");
       return;
     }
 
-    router.push('/dashboard');
+    router.push("/dashboard");
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-espresso via-leather to-espresso flex items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-md rounded-3xl border border-[#FFFFFF22] bg-[#FFFFFF12] p-3 sm:p-4 backdrop-blur-sm">
         <div className="text-center mb-7">
-          <h1 className="text-4xl font-bold text-gold mb-2">Leddar</h1>
+          <Image
+            src="/leddar-logo.svg"
+            alt="Leddar"
+            width={180}
+            height={56}
+            className="mx-auto mb-2 h-14 w-auto"
+            priority
+          />
           <p className="text-surface-200">Artisan Dashboard</p>
         </div>
 
@@ -93,10 +101,6 @@ export default function Login() {
               </Link>
             </div>
           </div>
-        </div>
-
-        <div className="mt-5 text-center text-surface-300 text-sm">
-          <p>Demo credentials: Any email and password will work</p>
         </div>
       </div>
     </div>

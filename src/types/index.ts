@@ -6,6 +6,7 @@ export interface User {
   whatsapp: string;
   productionGender?: "male" | "female" | "both";
   specialty: string;
+  portfolioImages?: string[];
   kycStatus: "pending" | "verified" | "rejected";
   location?: string;
   bankAccount?: {

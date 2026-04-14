@@ -36,7 +36,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const login = (email: string, password: string) => {
     if (email && password) {
-      setUser(mockUser);
+      if (!user || user.email !== email) {
+        setUser(mockUser);
+      }
       setIsAuthenticated(true);
       return true;
     }
@@ -51,7 +53,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         email: userData.email,
         phone: userData.phone || "",
         whatsapp: userData.whatsapp || "",
+        productionGender: userData.productionGender,
         specialty: userData.specialty || "",
+        portfolioImages: userData.portfolioImages || [],
         kycStatus: "pending",
       };
       setUser(newUser);

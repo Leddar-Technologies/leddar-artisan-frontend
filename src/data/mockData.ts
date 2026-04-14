@@ -64,7 +64,7 @@ export const mockJobs: Job[] = [
     productType: "Loafers Sample",
     quantity: 1,
     deadline: "2026-05-10",
-    status: "in_progress",
+    status: "assigned",
     specifications:
       "Classic black leather loafer sample. Formal style, polished finish, and cushioned insole.",
     assignedDate: "2026-03-20",

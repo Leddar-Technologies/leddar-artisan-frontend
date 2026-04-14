@@ -64,7 +64,15 @@ export default function Signup() {
     setPortfolioImages(portfolioImages.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const fileToDataUrl = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(new Error("Unable to read portfolio file"));
+      reader.readAsDataURL(file);
+    });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setPortfolioError("");
@@ -100,6 +108,10 @@ export default function Signup() {
       return;
     }
 
+    const portfolioImageUrls = await Promise.all(
+      portfolioImages.map((file) => fileToDataUrl(file)),
+    );
+
     const success = signup(
       {
         fullName: formData.fullName,
@@ -111,6 +123,7 @@ export default function Signup() {
         email: formData.email,
         phone: formData.phone,
         whatsapp: formData.whatsapp,
+        portfolioImages: portfolioImageUrls,
       },
       formData.password,
     );
@@ -207,7 +220,11 @@ export default function Signup() {
     <div className="min-h-screen bg-gradient-to-br from-espresso via-leather to-espresso flex items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-3xl rounded-3xl border border-[#FFFFFF22] bg-[#FFFFFF12] p-3 sm:p-4 backdrop-blur-sm max-h-[90vh] md:max-h-none overflow-y-auto lg:overflow-visible">
         <div className="text-center mb-7">
-          <h1 className="text-4xl font-bold text-gold mb-2">Leddar</h1>
+          <img
+            src="/leddar-logo.svg"
+            alt="Leddar"
+            className="mx-auto mb-2 h-12 w-auto sm:h-14"
+          />
           <p className="text-surface-200">Create Your Artisan Account</p>
         </div>
 
@@ -378,8 +395,14 @@ export default function Signup() {
                 className="mt-1 h-4 w-4 rounded border-surface-500 text-leather focus:ring-gold/50"
               />
               <span className="text-sm text-neutral-900">
-                I agree to the Terms and Conditions and confirm that all
-                information provided is accurate. *
+                I agree to the{" "}
+                <Link
+                  href="/signup"
+                  className="font-medium text-leather underline-offset-2 hover:underline"
+                >
+                  Terms and Conditions
+                </Link>{" "}
+                and confirm that all information provided is accurate. *
               </span>
             </label>
 
