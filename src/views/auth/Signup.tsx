@@ -1,15 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useApp } from "../../context/AppContext";
+import { useDispatch, useSelector } from "react-redux";
+import { registerArtisan, resetAuth } from "../../redux/slices/authSlice"; // Adjust path
+import { RootState, AppDispatch } from "../../redux/store"; // Adjust path
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
-import { UserPlus, Upload, CheckCircle, Mail } from "lucide-react";
+import { UserPlus, Upload, CheckCircle, Mail, Loader2 } from "lucide-react";
 
 export default function Signup() {
-  const { signup } = useApp();
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const {
+    loading,
+    error: serverError,
+    success,
+  } = useSelector((state: RootState) => state.auth);
+
   const [formData, setFormData] = useState({
     fullName: "",
     productionGender: "",
@@ -20,10 +27,16 @@ export default function Signup() {
     password: "",
     confirmPassword: "",
   });
+
   const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [error, setError] = useState("");
+  const [localError, setLocalError] = useState("");
   const [portfolioImages, setPortfolioImages] = useState<File[]>([]);
   const [portfolioError, setPortfolioError] = useState("");
+
+  // Reset auth state on component mount/unmount
+  useEffect(() => {
+    dispatch(resetAuth());
+  }, [dispatch]);
 
   const handleChange = (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });
@@ -32,11 +45,6 @@ export default function Signup() {
   const handlePortfolioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPortfolioError("");
     const files = Array.from(e.target.files || []);
-
-    if (files.length + portfolioImages.length < 3) {
-      setPortfolioError("Please upload at least 3 images");
-      return;
-    }
 
     if (files.length + portfolioImages.length > 4) {
       setPortfolioError("Maximum 4 images allowed");
@@ -55,28 +63,19 @@ export default function Signup() {
       return true;
     });
 
-    if (validFiles.length === files.length) {
-      setPortfolioImages([...portfolioImages, ...validFiles]);
-    }
+    setPortfolioImages((prev) => [...prev, ...validFiles]);
   };
 
   const removePortfolioImage = (index: number) => {
     setPortfolioImages(portfolioImages.filter((_, i) => i !== index));
   };
 
-  const fileToDataUrl = (file: File) =>
-    new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result));
-      reader.onerror = () => reject(new Error("Unable to read portfolio file"));
-      reader.readAsDataURL(file);
-    });
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setLocalError("");
     setPortfolioError("");
 
+    // Validation
     if (
       !formData.fullName ||
       !formData.productionGender ||
@@ -84,12 +83,12 @@ export default function Signup() {
       !formData.email ||
       !formData.password
     ) {
-      setError("Please fill in all required fields");
+      setLocalError("Please fill in all required fields");
       return;
     }
 
     if (!acceptedTerms) {
-      setError("You must accept the Terms and Conditions to continue");
+      setLocalError("You must accept the Terms and Conditions to continue");
       return;
     }
 
@@ -98,45 +97,31 @@ export default function Signup() {
       return;
     }
 
-    if (portfolioImages.length > 4) {
-      setPortfolioError("Maximum 4 images allowed");
-      return;
-    }
-
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      setLocalError("Passwords do not match");
       return;
     }
 
-    const portfolioImageUrls = await Promise.all(
-      portfolioImages.map((file) => fileToDataUrl(file)),
-    );
+    // Prepare FormData for Backend (Multer)
+    const data = new FormData();
+    data.append("fullName", formData.fullName);
+    data.append("email", formData.email);
+    data.append("password", formData.password);
+    data.append("productionGender", formData.productionGender);
+    data.append("specialty", formData.specialty);
+    data.append("phone", formData.phone);
+    data.append("whatsapp", formData.whatsapp);
+    data.append("acceptedTerms", String(acceptedTerms));
 
-    const success = signup(
-      {
-        fullName: formData.fullName,
-        productionGender: formData.productionGender as
-          | "male"
-          | "female"
-          | "both",
-        specialty: formData.specialty,
-        email: formData.email,
-        phone: formData.phone,
-        whatsapp: formData.whatsapp,
-        portfolioImages: portfolioImageUrls,
-      },
-      formData.password,
-    );
+    // Append images with the key "portfolio" to match your backend router
+    portfolioImages.forEach((file) => {
+      data.append("portfolio", file);
+    });
 
-    if (!success) {
-      setError("Failed to create account");
-      return;
-    }
-
-    setIsSubmitted(true);
+    dispatch(registerArtisan(data));
   };
 
-  if (isSubmitted) {
+  if (success) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-espresso via-leather to-espresso flex items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-2xl rounded-3xl border border-[#FFFFFF22] bg-[#FFFFFF12] p-3 sm:p-4 backdrop-blur-sm">
@@ -152,8 +137,8 @@ export default function Signup() {
                 Thank you for signing up to become an artisan on Leddar!
               </p>
 
-              <div className="bg-success/10 border border-success/30 rounded-xl p-4 mb-6">
-                <div className="flex items-start gap-2 text-left">
+              <div className="bg-success/10 border border-success/30 rounded-xl p-4 mb-6 text-left">
+                <div className="flex items-start gap-2">
                   <Mail
                     className="text-success flex-shrink-0 mt-0.5"
                     size={20}
@@ -164,8 +149,7 @@ export default function Signup() {
                     </p>
                     <p className="text-sm text-neutral-800">
                       We've sent a confirmation email to{" "}
-                      <strong>{formData.email}</strong>. Please check your inbox
-                      and spam folder.
+                      <strong>{formData.email}</strong>.
                     </p>
                   </div>
                 </div>
@@ -191,20 +175,8 @@ export default function Signup() {
                       You'll receive an approval email with your login details
                     </span>
                   </li>
-                  <li className="flex gap-3">
-                    <span className="font-bold text-leather flex-shrink-0">
-                      3.
-                    </span>
-                    <span>
-                      Once approved, you can log in and start receiving jobs
-                    </span>
-                  </li>
                 </ol>
               </div>
-
-              <p className="text-xs text-neutral-700 mb-6">
-                This typically takes 24-48 hours. We appreciate your patience!
-              </p>
 
               <Link href="/login" className="inline-block">
                 <Button variant="primary">Back to Login</Button>
@@ -330,38 +302,29 @@ export default function Signup() {
                   <p className="text-sm font-medium text-ink">
                     Click to upload portfolio images
                   </p>
-                  <p className="text-xs text-neutral-700 mt-1">
-                    JPG or PNG • 5MB each • Min 3, Max 4 images
-                  </p>
                 </label>
               </div>
 
               {portfolioImages.length > 0 && (
-                <div className="mt-4">
-                  <p className="text-sm font-medium text-ink mb-3">
-                    Uploaded: {portfolioImages.length}/4 images
-                  </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                    {portfolioImages.map((file, index) => (
-                      <div key={index} className="relative group">
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt={`Portfolio ${index + 1}`}
-                          className="w-full h-24 object-cover rounded-lg border border-surface-400"
-                        />
-                        <button
-                          onClick={() => removePortfolioImage(index)}
-                          className="absolute -top-2 -right-2 bg-danger text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                          type="button"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+                <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {portfolioImages.map((file, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`Portfolio ${index + 1}`}
+                        className="w-full h-24 object-cover rounded-lg border border-surface-400"
+                      />
+                      <button
+                        onClick={() => removePortfolioImage(index)}
+                        className="absolute -top-2 -right-2 bg-danger text-white rounded-full p-1 group-hover:scale-110 transition-transform"
+                        type="button"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
                 </div>
               )}
-
               {portfolioError && (
                 <p className="text-sm text-danger mt-2">{portfolioError}</p>
               )}
@@ -375,7 +338,6 @@ export default function Signup() {
                 value={formData.password}
                 onChange={(e) => handleChange("password", e.target.value)}
               />
-
               <Input
                 type="password"
                 label="Confirm Password *"
@@ -387,7 +349,7 @@ export default function Signup() {
               />
             </div>
 
-            <label className="flex items-start gap-3 rounded-xl border border-surface-400 bg-white/70 px-4 py-3">
+            <label className="flex items-start gap-3 rounded-xl border border-surface-400 bg-white/70 px-4 py-3 cursor-pointer">
               <input
                 type="checkbox"
                 checked={acceptedTerms}
@@ -398,34 +360,37 @@ export default function Signup() {
                 I agree to the{" "}
                 <Link
                   href="/signup"
-                  className="font-medium text-leather underline-offset-2 hover:underline"
+                  className="font-medium text-leather underline hover:underline"
                 >
                   Terms and Conditions
                 </Link>{" "}
-                and confirm that all information provided is accurate. *
+                *
               </span>
             </label>
 
-            {error && (
+            {(localError || serverError) && (
               <div className="bg-danger/10 text-danger border border-danger/30 px-4 py-3 rounded-xl text-sm">
-                {error}
+                {localError ||
+                  (typeof serverError === "string"
+                    ? serverError
+                    : "An error occurred")}
               </div>
             )}
 
-            <Button type="submit" variant="primary" fullWidth size="lg">
-              Create Account
+            <Button
+              type="submit"
+              variant="primary"
+              fullWidth
+              size="lg"
+              disabled={loading}
+            >
+              {loading ? (
+                <Loader2 className="animate-spin mx-auto" size={24} />
+              ) : (
+                "Create Account"
+              )}
             </Button>
           </form>
-
-          <div className="mt-6 pt-4 border-t border-surface-500 text-center">
-            <span className="text-neutral-800">Already have an account? </span>
-            <Link
-              href="/login"
-              className="text-leather hover:text-espresso font-medium"
-            >
-              Sign in
-            </Link>
-          </div>
         </div>
       </div>
     </div>
