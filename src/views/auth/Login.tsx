@@ -1,37 +1,56 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useApp } from "../../context/AppContext";
+import { useDispatch, useSelector } from "react-redux"; // Updated
+import { login, resetAuth } from "../../redux/slices/authSlice"; // Updated
+import { RootState, AppDispatch } from "../../redux/store"; // Updated
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import { LogIn } from "lucide-react";
 
 export default function Login() {
-  const { login } = useApp();
+  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
+
+  // Get auth state from Redux
+  const {
+    user,
+    loading,
+    error: serverError,
+  } = useSelector((state: RootState) => state.auth);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [localError, setLocalError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Redirect on successful login
+  useEffect(() => {
+    if (user) {
+      router.push("/dashboard");
+    }
+  }, [user, router]);
+
+  // Clean up errors when unmounting or starting fresh
+  useEffect(() => {
+    return () => {
+      dispatch(resetAuth());
+    };
+  }, [dispatch]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setLocalError("");
 
     if (!email || !password) {
-      setError("Please fill in all fields");
+      setLocalError("Please fill in all fields");
       return;
     }
 
-    const success = login(email, password);
-    if (!success) {
-      setError("Invalid credentials");
-      return;
-    }
-
-    router.push("/dashboard");
+    // Dispatch the Redux thunk
+    dispatch(login({ email, password }));
   };
 
   return (
@@ -62,6 +81,7 @@ export default function Login() {
               placeholder="john@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={loading}
             />
 
             <Input
@@ -70,16 +90,23 @@ export default function Login() {
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
             />
 
-            {error && (
+            {(localError || serverError) && (
               <div className="bg-danger/10 text-danger border border-danger/30 px-4 py-3 rounded-xl text-sm">
-                {error}
+                {localError || serverError}
               </div>
             )}
 
-            <Button type="submit" variant="primary" fullWidth size="lg">
-              Sign In
+            <Button
+              type="submit"
+              variant="primary"
+              fullWidth
+              size="lg"
+              isLoading={loading}
+            >
+              {loading ? "Signing In..." : "Sign In"}
             </Button>
           </form>
 
