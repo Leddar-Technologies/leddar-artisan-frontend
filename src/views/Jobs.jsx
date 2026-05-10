@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateJobStatus } from "../store/slices/jobsSlice";
+import { updateJobStatus } from "../redux/slices/jobsSlice";
 import {
   Card,
   CardContent,

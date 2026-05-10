@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateProfile } from "../store/slices/authSlice"; // Adjust path to your auth slice
+import { updateProfile } from "../redux/slices/authSlice"; // Adjust path to your auth slice
 import {
   Card,
   CardContent,
