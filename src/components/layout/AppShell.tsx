@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../../redux/authSlice";
+import { logout } from "../../redux/slices/authSlice"; 
 import MainLayout from "./MainLayout";
 
 export default function AppShell({ children }: { children: ReactNode }) {

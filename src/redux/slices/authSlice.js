@@ -4,19 +4,14 @@ import axios from "axios";
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 
-/**
- * Maps the frontend dropdown labels to the Prisma ArtisanSpecialty Enum
- */
 const mapSpecialtyToEnum = (displayValue) => {
   if (!displayValue) return "BAGS";
   const val = displayValue.toLowerCase();
-
   if (val.includes("footwear") || val.includes("shoes")) return "SHOES";
   if (val.includes("bag")) return "BAGS";
   if (val.includes("wallet")) return "WALLETS";
   if (val.includes("belt")) return "BELTS";
   if (val.includes("jacket")) return "JACKETS";
-
   return "BAGS";
 };
 
@@ -30,11 +25,12 @@ export const registerArtisan = createAsyncThunk(
       if (rawSpecialty) {
         formData.set("specialty", mapSpecialtyToEnum(rawSpecialty));
       }
-
       const response = await axios.post(
         `${API_URL}/auth/register/artisan`,
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } },
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        },
       );
       return response.data;
     } catch (err) {
@@ -45,16 +41,28 @@ export const registerArtisan = createAsyncThunk(
   },
 );
 
-// FIX: Added the missing login function for your Login.tsx
 export const login = createAsyncThunk(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${API_URL}/auth/login`, credentials);
-      // Assuming your backend returns { user, token }
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.error || "Login failed");
+    }
+  },
+);
+
+// NEW: Thunk for updating KYC and Bank Details
+export const updateKYC = createAsyncThunk(
+  "auth/updateKYC",
+  async (kycData, { rejectWithValue }) => {
+    try {
+      // Replace with your actual API endpoint for updating artisan profile/KYC
+      const response = await axios.patch(`${API_URL}/artisan/kyc`, kycData);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.error || "KYC update failed");
     }
   },
 );
@@ -102,10 +110,27 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user; // Store user data on success
+        state.user = action.payload.user;
         state.success = true;
       })
       .addCase(login.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Update KYC
+      .addCase(updateKYC.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateKYC.fulfilled, (state, action) => {
+        state.loading = false;
+        // Merge the new KYC/Bank data into the current user object
+        state.user = {
+          ...state.user,
+          kycStatus: action.payload.kycStatus,
+          bankAccount: action.payload.bankAccount,
+        };
+      })
+      .addCase(updateKYC.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../store"; // Adjust path to your store
-import { updateKYC } from "../store/authSlice"; // Adjust path to your auth slice
+import { updateKYC } from "../redux/slices/authSlice"; // Adjust path to your auth slice
 import {
   Card,
   CardContent,
@@ -19,18 +18,14 @@ import {
   CheckCircle2,
   ChevronRight,
   Fingerprint,
-  Landmark,
-  LockKeyhole,
   ShieldCheck,
-  Sparkles,
-  TimerReset,
 } from "lucide-react";
 
 export default function KYC() {
   const dispatch = useDispatch();
 
   // Grab the current user from Redux auth state
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state) => state.auth);
 
   const [verificationPanelOpen, setVerificationPanelOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -39,14 +34,14 @@ export default function KYC() {
     bankName: user?.bankAccount?.bankName || "",
   });
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Dispatch to Redux instead of local context
+    // Dispatch update to Redux store
     dispatch(
       updateKYC({
         bankAccount: {
@@ -66,43 +61,48 @@ export default function KYC() {
   };
 
   // Status mapping logic
-  const status =
-    user?.kycStatus === "verified"
-      ? {
+  const getStatusDetails = () => {
+    switch (user?.kycStatus) {
+      case "verified":
+        return {
           label: "Verified",
-          tone: "success" as const,
+          tone: "success",
           headline: "Verification complete",
           description:
             "Your account is verified and eligible for jobs and payments.",
           icon: CheckCircle2,
-        }
-      : user?.kycStatus === "pending"
-        ? {
-            label: "Pending",
-            tone: "warning" as const,
-            headline: "Verification in progress",
-            description:
-              "Your identity review is underway. Jobs and payments remain locked until it is approved.",
-            icon: BadgeCheck,
-          }
-        : user?.kycStatus === "rejected"
-          ? {
-              label: "Failed",
-              tone: "danger" as const,
-              headline: "Verification failed",
-              description:
-                "The submitted details were not approved. You can resubmit with corrected information.",
-              icon: AlertCircle,
-            }
-          : {
-              label: "Not started",
-              tone: "default" as const,
-              headline: "Verification not started",
-              description:
-                "Complete identity verification and add bank details before jobs and payouts are enabled.",
-              icon: Fingerprint,
-            };
+        };
+      case "pending":
+        return {
+          label: "Pending",
+          tone: "warning",
+          headline: "Verification in progress",
+          description:
+            "Your identity review is underway. Jobs and payments remain locked until approved.",
+          icon: BadgeCheck,
+        };
+      case "rejected":
+        return {
+          label: "Failed",
+          tone: "danger",
+          headline: "Verification failed",
+          description:
+            "Details were not approved. You can resubmit with corrected information.",
+          icon: AlertCircle,
+        };
+      default:
+        return {
+          label: "Not started",
+          tone: "default",
+          headline: "Verification not started",
+          description:
+            "Complete identity verification before jobs and payouts are enabled.",
+          icon: Fingerprint,
+        };
+    }
+  };
 
+  const status = getStatusDetails();
   const StatusIcon = status.icon;
   const isVerified = user?.kycStatus === "verified";
 
@@ -223,26 +223,19 @@ export default function KYC() {
             <Input
               label="Account name"
               value={formData.accountName}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                handleChange("accountName", e.target.value)
-              }
+              onChange={(e) => handleChange("accountName", e.target.value)}
             />
             <Input
               label="Account number"
               inputMode="numeric"
               value={formData.accountNumber}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                handleChange("accountNumber", e.target.value)
-              }
+              onChange={(e) => handleChange("accountNumber", e.target.value)}
             />
             <Input
               label="Bank name"
               value={formData.bankName}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                handleChange("bankName", e.target.value)
-              }
+              onChange={(e) => handleChange("bankName", e.target.value)}
             />
-
             <Button type="submit" variant="primary" size="lg" fullWidth>
               Submit bank details <ChevronRight className="ml-2" size={18} />
             </Button>

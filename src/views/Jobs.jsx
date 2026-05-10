@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useApp } from "../context/AppContext";
+import { useSelector, useDispatch } from "react-redux";
+import { updateJobStatus } from "../store/slices/jobsSlice";
 import {
   Card,
   CardContent,
@@ -10,19 +11,29 @@ import {
 } from "../components/ui/Card";
 import Badge from "../components/ui/Badge";
 import Button from "../components/ui/Button";
-import { Calendar, Eye, Hash, Image, Package, Tag } from "lucide-react";
+import {
+  Calendar,
+  Eye,
+  Hash,
+  Image as ImageIcon,
+  Package,
+  Tag,
+} from "lucide-react";
 import JobDetails from "./JobDetails";
 import {
   getReferenceImageAlt,
   getReferenceImageSrc,
 } from "../utils/referenceImages";
 
-type JobFilter = "all" | "sample" | "production";
-
 export default function Jobs() {
-  const { jobs, user, updateJobStatus } = useApp();
-  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
-  const [filter, setFilter] = useState<JobFilter>("all");
+  const dispatch = useDispatch();
+
+  // Access state from Redux slices
+  const { jobs } = useSelector((state) => state.jobs);
+  const { user } = useSelector((state) => state.auth);
+
+  const [selectedJobId, setSelectedJobId] = useState(null);
+  const [filter, setFilter] = useState("all");
 
   const filteredJobs = jobs.filter(
     (job) => filter === "all" || job.jobType === filter,
@@ -40,7 +51,7 @@ export default function Jobs() {
     ).length,
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status) => {
     switch (status) {
       case "assigned":
         return <Badge variant="info">Assigned</Badge>;
@@ -57,26 +68,24 @@ export default function Jobs() {
     }
   };
 
-  const getJobTypeBadge = (jobType: string) => {
+  const getJobTypeBadge = (jobType) => {
     if (jobType === "sample") {
       return <Badge variant="warning">Sample Job</Badge>;
     }
-
     return <Badge variant="info">Production Job</Badge>;
   };
 
-  const handleAccept = (jobId: string) => {
+  const handleAccept = (jobId) => {
     if (user?.kycStatus !== "verified") {
       alert("Please complete KYC verification before accepting jobs");
       return;
     }
-
-    updateJobStatus(jobId, "in_progress");
+    dispatch(updateJobStatus({ jobId, status: "in_progress" }));
   };
 
-  const handleDecline = (jobId: string) => {
+  const handleDecline = (jobId) => {
     if (confirm("Decline this job?")) {
-      updateJobStatus(jobId, "declined");
+      dispatch(updateJobStatus({ jobId, status: "declined" }));
     }
   };
 
@@ -170,7 +179,7 @@ export default function Jobs() {
               <button
                 key={item.id}
                 type="button"
-                onClick={() => setFilter(item.id as JobFilter)}
+                onClick={() => setFilter(item.id)}
                 className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
                   filter === item.id
                     ? "border-leather bg-leather text-white"
@@ -185,7 +194,7 @@ export default function Jobs() {
           {filteredJobs.length === 0 ? (
             <Card>
               <CardContent className="text-center py-16">
-                <Image className="mx-auto text-stone-400 mb-4" size={60} />
+                <ImageIcon className="mx-auto text-stone-400 mb-4" size={60} />
                 <h3 className="text-xl font-semibold text-ink mb-2">
                   No jobs in this category
                 </h3>
@@ -253,57 +262,6 @@ export default function Jobs() {
                       </div>
                     </div>
 
-                    <div className="rounded-2xl border border-surface-400/70 bg-white p-4">
-                      <p className="text-xs uppercase tracking-[0.18em] text-neutral-500">
-                        Specifications
-                      </p>
-                      <p className="mt-2 text-sm leading-6 text-neutral-700">
-                        {job.specifications}
-                      </p>
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2 text-sm font-medium text-ink">
-                        <Image size={16} className="text-leather" />
-                        Reference images
-                      </div>
-                      <div className="grid gap-3 sm:grid-cols-3">
-                        {(job.referenceImages || []).length > 0 ? (
-                          job.referenceImages!.map((image, index) => (
-                            <figure
-                              key={
-                                typeof image === "string"
-                                  ? image
-                                  : `${image.label}-${index}`
-                              }
-                              className="overflow-hidden rounded-2xl border border-surface-400/70 bg-white shadow-sm"
-                            >
-                              <img
-                                src={getReferenceImageSrc(image)}
-                                alt={getReferenceImageAlt(image)}
-                                className="h-36 w-full object-cover"
-                              />
-                              <figcaption className="border-t border-surface-300 px-3 py-2 text-xs font-medium text-neutral-700">
-                                {getReferenceImageAlt(image)}
-                              </figcaption>
-                            </figure>
-                          ))
-                        ) : (
-                          <p className="text-sm text-neutral-500">
-                            No reference images provided.
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    {job.jobType === "sample" &&
-                      job.status === "video_uploaded" && (
-                        <div className="rounded-2xl border border-gold/30 bg-gold/10 p-4 text-sm leading-6 text-leather">
-                          Sample video uploaded. Admin reviews this before
-                          forwarding the sample to the brand.
-                        </div>
-                      )}
-
                     <div className="flex flex-col gap-3 border-t border-surface-400/70 pt-4 sm:flex-row sm:items-center sm:justify-between">
                       <div className="flex flex-wrap gap-3">
                         {job.status === "assigned" && (
@@ -323,23 +281,14 @@ export default function Jobs() {
                             </Button>
                           </>
                         )}
-
                         <Button
                           variant="outline"
                           onClick={() => setSelectedJobId(job.id)}
                           className="flex items-center gap-2"
                         >
-                          <Eye size={18} />
-                          View details
+                          <Eye size={18} /> View details
                         </Button>
                       </div>
-
-                      {job.status === "assigned" &&
-                        user?.kycStatus !== "verified" && (
-                          <p className="text-sm text-neutral-600">
-                            Complete KYC before accepting any job.
-                          </p>
-                        )}
                     </div>
                   </CardContent>
                 </Card>
