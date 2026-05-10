@@ -1,6 +1,6 @@
 "use client";
 
-import { useApp } from "../context/AppContext";
+import { useSelector } from "react-redux";
 import StatCard from "../components/ui/StatCard";
 import {
   Card,
@@ -18,34 +18,56 @@ import {
 } from "lucide-react";
 
 export default function Dashboard() {
-  const { user, jobs, payments, notifications } = useApp();
+  const { user } = useSelector((state: any) => state.auth);
+
+  // Fallback empty arrays in case data is not loaded yet
+  const jobs = useSelector((state: any) => state.jobs?.jobs || []);
+  const payments = useSelector((state: any) => state.payments?.payments || []);
+  const notifications = useSelector(
+    (state: any) => state.notifications?.notifications || [],
+  );
 
   const totalJobs = jobs.length;
+
   const inProgressJobs = jobs.filter(
-    (j) => j.status === "in_progress" || j.status === "video_uploaded",
+    (j: any) => j.status === "in_progress" || j.status === "video_uploaded",
   ).length;
-  const completedJobs = jobs.filter((j) => j.status === "completed").length;
-  const sampleJobs = jobs.filter((j) => j.jobType === "sample").length;
-  const productionJobs = jobs.filter((j) => j.jobType === "production").length;
+
+  const completedJobs = jobs.filter(
+    (j: any) => j.status === "completed",
+  ).length;
+
+  const sampleJobs = jobs.filter((j: any) => j.jobType === "sample").length;
+
+  const productionJobs = jobs.filter(
+    (j: any) => j.jobType === "production",
+  ).length;
+
   const totalEarnings = payments
-    .filter((p) => p.status === "received")
-    .reduce((sum, p) => sum + p.amount, 0);
+    .filter((p: any) => p.status === "received")
+    .reduce((sum: number, p: any) => sum + p.amount, 0);
 
   const recentJobs = jobs.slice(0, 3);
+
   const recentNotifications = notifications.slice(0, 4);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "assigned":
         return <Badge variant="info">Assigned</Badge>;
+
       case "in_progress":
         return <Badge variant="warning">In Progress</Badge>;
+
       case "video_uploaded":
         return <Badge variant="warning">Video Uploaded</Badge>;
+
       case "completed":
         return <Badge variant="success">Completed</Badge>;
+
       case "declined":
         return <Badge variant="danger">Declined</Badge>;
+
       default:
         return <Badge>{status}</Badge>;
     }
@@ -55,6 +77,7 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold text-ink">Dashboard</h1>
+
         <p className="text-neutral-700 mt-1">
           Overview of your work and earnings
         </p>
@@ -66,10 +89,12 @@ export default function Dashboard() {
             <div className="p-2 bg-gold/15 rounded-lg">
               <TrendingUp className="text-leather" size={20} />
             </div>
+
             <div>
               <h3 className="font-semibold text-ink">
                 Complete Your KYC Verification
               </h3>
+
               <p className="text-sm text-neutral-700 mt-1">
                 You cannot receive jobs or payments until your KYC is verified.
                 Please complete your verification.
@@ -86,18 +111,21 @@ export default function Dashboard() {
           icon={Briefcase}
           iconColor="text-leather"
         />
+
         <StatCard
           title="Active Work"
           value={inProgressJobs}
           icon={Clock}
           iconColor="text-gold"
         />
+
         <StatCard
           title="Sample Jobs"
           value={sampleJobs}
           icon={CheckCircle}
           iconColor="text-success"
         />
+
         <StatCard
           title="Production Jobs"
           value={productionJobs}
@@ -113,6 +141,7 @@ export default function Dashboard() {
           icon={CheckCircle}
           iconColor="text-success"
         />
+
         <StatCard
           title="Total Earnings"
           value={`₦${totalEarnings.toLocaleString()}`}
@@ -126,13 +155,14 @@ export default function Dashboard() {
           <CardHeader>
             <CardTitle>Recent Jobs</CardTitle>
           </CardHeader>
+
           <CardContent className="space-y-4">
             {recentJobs.length === 0 ? (
               <p className="text-stone-500 text-center py-8">
                 No jobs assigned yet
               </p>
             ) : (
-              recentJobs.map((job) => (
+              recentJobs.map((job: any) => (
                 <div
                   key={job.id}
                   className="flex items-start justify-between p-4 bg-stone-50 rounded-lg"
@@ -141,13 +171,16 @@ export default function Dashboard() {
                     <h4 className="font-semibold text-stone-900">
                       {job.productType}
                     </h4>
+
                     <p className="text-sm text-stone-600 mt-1">
                       Quantity: {job.quantity} units
                     </p>
+
                     <p className="text-sm text-stone-600">
                       Deadline: {new Date(job.deadline).toLocaleDateString()}
                     </p>
                   </div>
+
                   <div>{getStatusBadge(job.status)}</div>
                 </div>
               ))
@@ -159,18 +192,21 @@ export default function Dashboard() {
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
           </CardHeader>
+
           <CardContent className="space-y-3">
             {recentNotifications.length === 0 ? (
               <p className="text-stone-500 text-center py-8">
                 No recent activity
               </p>
             ) : (
-              recentNotifications.map((notif) => (
+              recentNotifications.map((notif: any) => (
                 <div key={notif.id} className="p-3 bg-stone-50 rounded-lg">
                   <h4 className="font-medium text-stone-900 text-sm">
                     {notif.title}
                   </h4>
+
                   <p className="text-xs text-stone-600 mt-1">{notif.message}</p>
+
                   <p className="text-xs text-stone-400 mt-1">
                     {new Date(notif.date).toLocaleDateString()}
                   </p>

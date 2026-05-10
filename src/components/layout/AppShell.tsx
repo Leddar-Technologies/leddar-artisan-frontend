@@ -1,16 +1,23 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useApp } from "../../context/AppContext";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../../redux/authSlice";
 import MainLayout from "./MainLayout";
 
 export default function AppShell({ children }: { children: ReactNode }) {
-  const { user, logout } = useApp();
+  const dispatch = useDispatch();
+
+  const { user } = useSelector((state: any) => state.auth);
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
 
   return (
     <MainLayout
-      userName={user?.fullName.split(" ")[0] || "User"}
-      onLogout={logout}
+      userName={user?.fullName?.split(" ")[0] || "User"}
+      onLogout={handleLogout}
     >
       {children}
     </MainLayout>
