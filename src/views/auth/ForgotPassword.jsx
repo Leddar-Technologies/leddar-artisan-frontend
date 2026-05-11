@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import axios from "axios"; // Ensure axios is installed
+import axios from "axios";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import { KeyRound, ArrowLeft, Loader2 } from "lucide-react";
@@ -13,7 +13,7 @@ export default function ForgotPassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email) return;
 
@@ -21,17 +21,15 @@ export default function ForgotPassword() {
     setError("");
 
     try {
-      // Point this to your actual API route
-      // Using the Artisan client context, the backend handles the role logic
+      // Points to your API route defined in your environment variables
       await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/forgot-password`,
         { email },
       );
 
       setSubmitted(true);
-    } catch (err: any) {
-      // We still show success or a generic message based on your security
-      // preference, but if the request fails (network/server), we catch it here.
+    } catch (err) {
+      // Handling errors without TypeScript "any" or "Error" types
       setError(
         err.response?.data?.message ||
           "Something went wrong. Please try again.",
@@ -87,7 +85,7 @@ export default function ForgotPassword() {
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center justify-center gap-2">
                     <Loader2 className="animate-spin" size={18} /> Sending...
                   </span>
                 ) : (

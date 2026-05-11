@@ -5,14 +5,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { login, resetAuth } from "../../redux/slices/authSlice";
-import { RootState, AppDispatch } from "../../redux/store";
+import { login, resetAuth } from "../../store/slices/authSlice";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import { LogIn, Loader2, AlertCircle } from "lucide-react";
 
 export default function Login() {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
   const router = useRouter();
 
   // Get auth state from Redux
@@ -20,7 +19,7 @@ export default function Login() {
     user,
     loading,
     error: serverError,
-  } = useSelector((state: RootState) => state.auth);
+  } = useSelector((state) => state.auth);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,7 +28,6 @@ export default function Login() {
   // Redirect on successful login based on user role
   useEffect(() => {
     if (user) {
-      // Directing to the artisan-specific dashboard path
       router.push("/dashboard");
     }
   }, [user, router]);
@@ -41,7 +39,7 @@ export default function Login() {
     };
   }, [dispatch]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLocalError("");
 
@@ -105,7 +103,6 @@ export default function Login() {
               </div>
             </div>
 
-            {/* Enhanced Error Display: Matches the artisan signup style */}
             {(localError || serverError) && (
               <div className="bg-danger/10 text-danger border border-danger/30 px-4 py-3 rounded-xl text-sm flex items-start gap-2 animate-in fade-in duration-300">
                 <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />

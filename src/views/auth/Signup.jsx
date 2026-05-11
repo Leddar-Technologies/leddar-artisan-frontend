@@ -3,19 +3,18 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
-import { registerArtisan, resetAuth } from "../../redux/slices/authSlice"; // Adjust path
-import { RootState, AppDispatch } from "../../redux/store"; // Adjust path
+import { registerArtisan, resetAuth } from "../../store/slices/authSlice";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import { UserPlus, Upload, CheckCircle, Mail, Loader2 } from "lucide-react";
 
 export default function Signup() {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
   const {
     loading,
     error: serverError,
     success,
-  } = useSelector((state: RootState) => state.auth);
+  } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -30,7 +29,7 @@ export default function Signup() {
 
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [localError, setLocalError] = useState("");
-  const [portfolioImages, setPortfolioImages] = useState<File[]>([]);
+  const [portfolioImages, setPortfolioImages] = useState([]);
   const [portfolioError, setPortfolioError] = useState("");
 
   // Reset auth state on component mount/unmount
@@ -38,11 +37,11 @@ export default function Signup() {
     dispatch(resetAuth());
   }, [dispatch]);
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
   };
 
-  const handlePortfolioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePortfolioChange = (e) => {
     setPortfolioError("");
     const files = Array.from(e.target.files || []);
 
@@ -66,11 +65,11 @@ export default function Signup() {
     setPortfolioImages((prev) => [...prev, ...validFiles]);
   };
 
-  const removePortfolioImage = (index: number) => {
+  const removePortfolioImage = (index) => {
     setPortfolioImages(portfolioImages.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLocalError("");
     setPortfolioError("");
@@ -113,7 +112,7 @@ export default function Signup() {
     data.append("whatsapp", formData.whatsapp);
     data.append("acceptedTerms", String(acceptedTerms));
 
-    // Append images with the key "portfolio" to match your backend router
+    // Append images with the key "portfolio" to match backend router
     portfolioImages.forEach((file) => {
       data.append("portfolio", file);
     });
@@ -154,30 +153,6 @@ export default function Signup() {
                   </div>
                 </div>
               </div>
-
-              <div className="space-y-3 text-left mb-6">
-                <h3 className="font-semibold text-ink">What happens next:</h3>
-                <ol className="space-y-2 text-sm text-neutral-800">
-                  <li className="flex gap-3">
-                    <span className="font-bold text-leather flex-shrink-0">
-                      1.
-                    </span>
-                    <span>
-                      Our team will review your portfolio and profile
-                      information
-                    </span>
-                  </li>
-                  <li className="flex gap-3">
-                    <span className="font-bold text-leather flex-shrink-0">
-                      2.
-                    </span>
-                    <span>
-                      You'll receive an approval email with your login details
-                    </span>
-                  </li>
-                </ol>
-              </div>
-
               <Link href="/login" className="inline-block">
                 <Button variant="primary">Back to Login</Button>
               </Link>
@@ -214,7 +189,6 @@ export default function Signup() {
                 value={formData.fullName}
                 onChange={(e) => handleChange("fullName", e.target.value)}
               />
-
               <div>
                 <label className="block text-sm font-medium text-neutral-900 mb-1.5">
                   Gender You Can Produce For *
@@ -224,7 +198,7 @@ export default function Signup() {
                   onChange={(e) =>
                     handleChange("productionGender", e.target.value)
                   }
-                  className="w-full px-4 py-2.5 border border-surface-500 rounded-xl bg-white/90 focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
+                  className="w-full px-4 py-2.5 border border-surface-500 rounded-xl bg-white focus:ring-2 focus:ring-gold outline-none"
                 >
                   <option value="">Select option</option>
                   <option value="male">Male</option>
@@ -232,60 +206,23 @@ export default function Signup() {
                   <option value="both">Both</option>
                 </select>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-900 mb-1.5">
-                  Skill/Specialty *
-                </label>
-                <select
-                  value={formData.specialty}
-                  onChange={(e) => handleChange("specialty", e.target.value)}
-                  className="w-full px-4 py-2.5 border border-surface-500 rounded-xl bg-white/90 focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
-                >
-                  <option value="">Select specialty</option>
-                  <option value="Footwear - shoes and boots">
-                    Footwear - shoes and boots
-                  </option>
-                  <option value="Footwear - slippers, sandals and heels">
-                    Footwear - slippers, sandals and heels
-                  </option>
-                  <option value="Bags">Bags</option>
-                  <option value="Wallets, Belts">Wallets, Belts</option>
-                  <option value="Small goods">Small goods</option>
-                </select>
-              </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
-              <Input
-                type="email"
-                label="Email Address *"
-                placeholder="john@example.com"
-                value={formData.email}
-                onChange={(e) => handleChange("email", e.target.value)}
-              />
-
-              <Input
-                type="tel"
-                label="WhatsApp Number"
-                placeholder="+234 801 234 5678"
-                value={formData.whatsapp}
-                onChange={(e) => handleChange("whatsapp", e.target.value)}
-              />
-            </div>
+            <Input
+              type="email"
+              label="Email Address *"
+              value={formData.email}
+              onChange={(e) => handleChange("email", e.target.value)}
+            />
 
             <div className="border-t border-surface-400 pt-5">
               <div className="flex items-center gap-2 mb-3">
                 <Upload className="text-leather" size={20} />
                 <label className="block text-sm font-medium text-neutral-900">
-                  Portfolio Images *{" "}
-                  <span className="text-xs text-neutral-700">
-                    (3-4 images, JPG/PNG, 5MB max each)
-                  </span>
+                  Portfolio Images * (3-4 images)
                 </label>
               </div>
-
-              <div className="border-2 border-dashed border-surface-500 rounded-xl p-6 text-center hover:border-leather/50 transition-colors">
+              <div className="border-2 border-dashed border-surface-500 rounded-xl p-6 text-center cursor-pointer">
                 <input
                   type="file"
                   id="portfolio-upload"
@@ -294,29 +231,26 @@ export default function Signup() {
                   onChange={handlePortfolioChange}
                   className="hidden"
                 />
-                <label
-                  htmlFor="portfolio-upload"
-                  className="cursor-pointer block"
-                >
+                <label htmlFor="portfolio-upload" className="cursor-pointer">
                   <Upload className="mx-auto text-neutral-700 mb-2" size={32} />
-                  <p className="text-sm font-medium text-ink">
+                  <p className="text-sm font-medium">
                     Click to upload portfolio images
                   </p>
                 </label>
               </div>
 
               {portfolioImages.length > 0 && (
-                <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="mt-4 grid grid-cols-4 gap-3">
                   {portfolioImages.map((file, index) => (
-                    <div key={index} className="relative group">
+                    <div key={index} className="relative">
                       <img
                         src={URL.createObjectURL(file)}
-                        alt={`Portfolio ${index + 1}`}
-                        className="w-full h-24 object-cover rounded-lg border border-surface-400"
+                        className="w-full h-24 object-cover rounded-lg"
+                        alt=""
                       />
                       <button
                         onClick={() => removePortfolioImage(index)}
-                        className="absolute -top-2 -right-2 bg-danger text-white rounded-full p-1 group-hover:scale-110 transition-transform"
+                        className="absolute -top-2 -right-2 bg-danger text-white rounded-full p-1"
                         type="button"
                       >
                         ✕
@@ -325,23 +259,18 @@ export default function Signup() {
                   ))}
                 </div>
               )}
-              {portfolioError && (
-                <p className="text-sm text-danger mt-2">{portfolioError}</p>
-              )}
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
               <Input
                 type="password"
                 label="Password *"
-                placeholder="Create a password"
                 value={formData.password}
                 onChange={(e) => handleChange("password", e.target.value)}
               />
               <Input
                 type="password"
                 label="Confirm Password *"
-                placeholder="Confirm your password"
                 value={formData.confirmPassword}
                 onChange={(e) =>
                   handleChange("confirmPassword", e.target.value)
@@ -349,33 +278,17 @@ export default function Signup() {
               />
             </div>
 
-            <label className="flex items-start gap-3 rounded-xl border border-surface-400 bg-white/70 px-4 py-3 cursor-pointer">
+            <label className="flex items-start gap-3 rounded-xl border border-surface-400 bg-white px-4 py-3 cursor-pointer">
               <input
                 type="checkbox"
                 checked={acceptedTerms}
                 onChange={(e) => setAcceptedTerms(e.target.checked)}
-                className="mt-1 h-4 w-4 rounded border-surface-500 text-leather focus:ring-gold/50"
+                className="mt-1 h-4 w-4"
               />
-              <span className="text-sm text-neutral-900">
-                I agree to the{" "}
-                <Link
-                  href="/signup"
-                  className="font-medium text-leather underline hover:underline"
-                >
-                  Terms and Conditions
-                </Link>{" "}
-                *
+              <span className="text-sm">
+                I agree to the Terms and Conditions *
               </span>
             </label>
-
-            {(localError || serverError) && (
-              <div className="bg-danger/10 text-danger border border-danger/30 px-4 py-3 rounded-xl text-sm">
-                {localError ||
-                  (typeof serverError === "string"
-                    ? serverError
-                    : "An error occurred")}
-              </div>
-            )}
 
             <Button
               type="submit"

@@ -28,7 +28,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-, "src/views/JobDetails.jsx", "src/views/Jobs.jsx", "src/views/KYC.jsx", "src/views/Payments.jsx", "src/views/Profile.jsx", "src/views/auth/Login.jsx", "src/views/auth/Signup.jsx", "src/views/Dashboard.jsx"  ],
+, "src/views/JobDetails.jsx", "src/views/Jobs.jsx", "src/views/KYC.jsx", "src/views/Payments.jsx", "src/views/Profile.jsx", "src/views/auth/Login.jsx", "src/views/auth/Signup.jsx", "src/views/Dashboard.jsx", "src/views/auth/ForgotPassword.jsx"  ],
   "exclude": [
     "node_modules"
   ]
