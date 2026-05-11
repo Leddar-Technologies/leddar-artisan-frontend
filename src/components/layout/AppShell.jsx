@@ -1,7 +1,7 @@
 "use client";
 
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../../redux/slices/authSlice";
+import { logout } from "../../../src/redux/slices/authSlice";
 import MainLayout from "./MainLayout";
 
 export default function AppShell({ children }) {
