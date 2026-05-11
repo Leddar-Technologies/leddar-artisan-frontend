@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
-import { registerArtisan, resetAuth } from "../../store/slices/authSlice";
+import { registerArtisan, resetAuth } from "../../redux/slices/authSlice";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import { UserPlus, Upload, CheckCircle, Mail, Loader2 } from "lucide-react";

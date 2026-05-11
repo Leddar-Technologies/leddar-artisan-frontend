@@ -7,6 +7,10 @@ import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import { Lock, Loader2 } from "lucide-react";
 
+/**
+ * Reset Password Page
+ * Standard JavaScript version for the artisan dashboard.
+ */
 export default function ResetPasswordPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -14,12 +18,10 @@ export default function ResetPasswordPage() {
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [status, setStatus] = useState<
-    "idle" | "loading" | "success" | "error"
-  >("idle");
+  const [status, setStatus] = useState("idle"); // Status: idle, loading, success, error
   const [message, setMessage] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // 1. Client-side Validation
@@ -39,8 +41,8 @@ export default function ResetPasswordPage() {
     try {
       /**
        * BACKEND ALIGNMENT:
-       * 1. Token is sent as a query parameter (?token=...) to match req.query.token
-       * 2. Body uses the key 'password' to match req.body.password
+       * 1. Token is sent as a query parameter (?token=...)
+       * 2. Body uses the key 'password'
        */
       await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/reset-password?token=${token}`,
@@ -48,11 +50,11 @@ export default function ResetPasswordPage() {
       );
 
       setStatus("success");
-      // Redirect to login after a short delay so they can see the success message
+      // Redirect to login after a short delay
       setTimeout(() => router.push("/login"), 3000);
-    } catch (err: any) {
+    } catch (err) {
       setStatus("error");
-      // Look for error in err.response.data.error to match your controller's response format
+      // Accessing error response without TS 'any' casting
       setMessage(
         err.response?.data?.error ||
           "Failed to reset password. The link may be expired.",
@@ -82,8 +84,8 @@ export default function ResetPasswordPage() {
         </div>
 
         {status === "success" ? (
-          <div className="space-y-4">
-            <div className="bg-green-50 text-green-700 p-4 rounded border border-green-200 text-sm">
+          <div className="space-y-4 text-center">
+            <div className="bg-green-50 text-green-700 p-4 rounded border border-green-200 text-sm text-left">
               Password reset successful! Redirecting to login...
             </div>
             <Loader2 className="animate-spin mx-auto text-green-600" />

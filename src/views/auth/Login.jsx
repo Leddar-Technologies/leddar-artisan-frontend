@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { login, resetAuth } from "../../store/slices/authSlice";
+import { login, resetAuth } from "../../redux/slices/authSlice";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import { LogIn, Loader2, AlertCircle } from "lucide-react";
