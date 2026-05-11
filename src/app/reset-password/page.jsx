@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
 import Input from "../../components/ui/Input";
@@ -8,23 +8,22 @@ import Button from "../../components/ui/Button";
 import { Lock, Loader2 } from "lucide-react";
 
 /**
- * Reset Password Page
- * Standard JavaScript version for the artisan dashboard.
+ * ResetPasswordContent handles the actual logic and UI.
+ * It is separated so it can be wrapped in a Suspense boundary.
  */
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get("token");
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [status, setStatus] = useState("idle"); // Status: idle, loading, success, error
+  const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 1. Client-side Validation
     if (password.length < 8) {
       setStatus("error");
       setMessage("Password must be at least 8 characters");
@@ -39,22 +38,15 @@ export default function ResetPasswordPage() {
 
     setStatus("loading");
     try {
-      /**
-       * BACKEND ALIGNMENT:
-       * 1. Token is sent as a query parameter (?token=...)
-       * 2. Body uses the key 'password'
-       */
       await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/reset-password?token=${token}`,
         { password },
       );
 
       setStatus("success");
-      // Redirect to login after a short delay
       setTimeout(() => router.push("/login"), 3000);
     } catch (err) {
       setStatus("error");
-      // Accessing error response without TS 'any' casting
       setMessage(
         err.response?.data?.error ||
           "Failed to reset password. The link may be expired.",
@@ -134,5 +126,23 @@ export default function ResetPasswordPage() {
         )}
       </div>
     </div>
+  );
+}
+
+/**
+ * Main Page Export
+ * Wraps the content in Suspense to satisfy Next.js build requirements.
+ */
+export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-stone-900 flex items-center justify-center">
+          <Loader2 className="animate-spin text-white" size={48} />
+        </div>
+      }
+    >
+      <ResetPasswordContent />
+    </Suspense>
   );
 }

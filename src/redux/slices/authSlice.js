@@ -58,7 +58,6 @@ export const updateKYC = createAsyncThunk(
   "auth/updateKYC",
   async (kycData, { rejectWithValue }) => {
     try {
-      // Replace with your actual API endpoint for updating artisan profile/KYC
       const response = await axios.patch(`${API_URL}/artisan/kyc`, kycData);
       return response.data;
     } catch (err) {
@@ -86,6 +85,12 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.success = false;
+    },
+    // ADDED: Missing updateProfile reducer for src/views/Profile.jsx
+    updateProfile: (state, action) => {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
+      }
     },
   },
   extraReducers: (builder) => {
@@ -137,5 +142,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { resetAuth, logout } = authSlice.actions;
+// Added updateProfile to the exports
+export const { resetAuth, logout, updateProfile } = authSlice.actions;
 export default authSlice.reducer;
