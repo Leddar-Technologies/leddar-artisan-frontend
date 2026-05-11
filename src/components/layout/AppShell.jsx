@@ -1,14 +1,14 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../../redux/slices/authSlice"; 
+import { logout } from "../store/slices/authSlice"; // Adjusted path to match store/ folder
 import MainLayout from "./MainLayout";
 
-export default function AppShell({ children }: { children: ReactNode }) {
+export default function AppShell({ children }) {
   const dispatch = useDispatch();
 
-  const { user } = useSelector((state: any) => state.auth);
+  // Accessing auth state from Redux
+  const { user } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
     dispatch(logout());

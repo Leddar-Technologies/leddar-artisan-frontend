@@ -1,15 +1,13 @@
 /* eslint-disable react-refresh/only-export-components */
-import type { Metadata } from "next";
-import type { ReactNode } from "react";
 import "../index.css";
 import Providers from "../components/providers/Providers";
 
-export const metadata: Metadata = {
+export const metadat = {
   title: "Leddar Artisan App",
   description: "Artisan workflow dashboard and marketplace registration",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="antialiased">

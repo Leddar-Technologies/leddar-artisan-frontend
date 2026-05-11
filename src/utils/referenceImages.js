@@ -1,24 +1,40 @@
-import type { ReferenceImage } from "../types";
+/**
+ * Utility functions for handling reference images and SVG placeholders.
+ * Standard JavaScript version for the Leddar Artisan Dashboard.
+ */
 
 const palette = ["#c08457", "#7c5c45", "#2f5d50", "#6e4b3a", "#9b7a4d"];
 
-const escapeSvgText = (value: string) =>
+/**
+ * Escapes special characters for safe inclusion in SVG data URIs.
+ */
+const escapeSvgText = (value) =>
   value
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 
-const hashLabel = (label: string) =>
+/**
+ * Generates a consistent hash from a string to pick a color from the palette.
+ */
+const hashLabel = (label) =>
   Array.from(label).reduce(
     (sum, character) => sum + character.charCodeAt(0),
     0,
   );
 
-const getResolvedLabel = (image: ReferenceImage) =>
+/**
+ * Resolves the label string regardless of whether the input is a string or an object.
+ */
+const getResolvedLabel = (image) =>
   typeof image === "string" ? image : image.label;
 
-export const getReferenceImageSrc = (image: ReferenceImage) => {
+/**
+ * Generates the source URI for an image.
+ * If a valid URL is provided, it returns it; otherwise, it generates a themed SVG placeholder.
+ */
+export const getReferenceImageSrc = (image) => {
   if (typeof image === "string") {
     if (
       image.startsWith("http://") ||
@@ -29,14 +45,15 @@ export const getReferenceImageSrc = (image: ReferenceImage) => {
     ) {
       return image;
     }
-  } else if (image.src) {
+  } else if (image && image.src) {
     return image.src;
   }
 
-  const label = getResolvedLabel(image);
+  const label = getResolvedLabel(image) || "Reference Image";
   const safeLabel = escapeSvgText(label);
   const color = palette[hashLabel(label) % palette.length];
 
+  // Return a generated SVG placeholder as a Data URI
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-label="${safeLabel}">
       <defs>
@@ -57,5 +74,10 @@ export const getReferenceImageSrc = (image: ReferenceImage) => {
   )}`;
 };
 
-export const getReferenceImageAlt = (image: ReferenceImage) =>
-  typeof image === "string" ? image : image.alt || image.label;
+/**
+ * Returns the alt text for an image.
+ */
+export const getReferenceImageAlt = (image) => {
+  if (!image) return "Reference image";
+  return typeof image === "string" ? image : image.alt || image.label;
+};

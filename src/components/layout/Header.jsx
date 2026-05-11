@@ -3,17 +3,7 @@
 import { LogOut, Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-interface HeaderProps {
-  userName: string;
-  onLogout: () => void;
-  onMenuToggle: () => void;
-}
-
-export default function Header({
-  userName,
-  onLogout,
-  onMenuToggle,
-}: HeaderProps) {
+export default function Header({ userName, onLogout, onMenuToggle }) {
   const router = useRouter();
 
   const handleLogout = () => {
@@ -25,6 +15,7 @@ export default function Header({
     <header className="z-20 border-b border-surface-400/80 bg-white/75 backdrop-blur-md">
       <div className="px-4 py-3 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
         <div className="min-w-0 flex items-start gap-3 sm:gap-4">
+          {/* Mobile Menu Toggle */}
           <button
             onClick={onMenuToggle}
             className="lg:hidden p-2.5 bg-espresso text-white rounded-xl border border-white/10 flex-shrink-0"

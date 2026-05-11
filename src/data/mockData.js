@@ -1,6 +1,9 @@
-import { User, Job, Payment, Notification } from "../types";
+/**
+ * Mock data for the artisan dashboard.
+ * Standard JavaScript version to prevent build errors in Amplify.
+ */
 
-export const mockUser: User = {
+export const mockUser = {
   id: "1",
   fullName: "John Adebayo",
   email: "john.adebayo@example.com",
@@ -17,7 +20,7 @@ export const mockUser: User = {
   },
 };
 
-export const mockJobs: Job[] = [
+export const mockJobs = [
   {
     id: "1",
     jobType: "sample",
@@ -72,7 +75,7 @@ export const mockJobs: Job[] = [
   },
 ];
 
-export const mockPayments: Payment[] = [
+export const mockPayments = [
   {
     id: "1",
     jobId: "3",
@@ -115,7 +118,7 @@ export const mockPayments: Payment[] = [
   },
 ];
 
-export const mockNotifications: Notification[] = [
+export const mockNotifications = [
   {
     id: "1",
     title: "New Job Assigned",

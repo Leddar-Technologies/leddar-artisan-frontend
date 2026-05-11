@@ -5,12 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Home, Briefcase, Wallet, User, FileCheck } from "lucide-react";
 
-interface SidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+export default function Sidebar({ isOpen, onClose }) {
   const pathname = usePathname();
 
   const menuItems = [
@@ -69,6 +64,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
       </aside>
 
+      {/* Mobile Overlay */}
       {isOpen && (
         <div
           onClick={onClose}
