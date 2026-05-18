@@ -16,7 +16,7 @@ export default function AppShell({ children }) {
 
   return (
     <MainLayout
-      userName={user?.fullName?.split(" ")[0] || "User"}
+      userName={user?.artisan?.fullName?.split(" ")[0] || "User"}
       onLogout={handleLogout}
     >
       {children}

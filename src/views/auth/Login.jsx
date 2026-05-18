@@ -11,10 +11,10 @@ import Button from "../../components/ui/Button";
 import { LogIn, Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
+  console.log("=== LOGIN COMPONENT RENDERED ===");
   const dispatch = useDispatch();
   const router = useRouter();
 
-  // Get auth state from Redux
   const {
     user,
     loading,
@@ -23,24 +23,28 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // State for eye toggle
+  const [showPassword, setShowPassword] = useState(false);
   const [localError, setLocalError] = useState("");
 
-  // Redirect on successful login based on user role
   useEffect(() => {
+    console.log("=== AUTH STATE ===");
+    console.log("user:", user);
+    console.log("loading:", loading);
+    console.log("serverError:", serverError);
+
     if (user) {
+      console.log("User found, redirecting to /dashboard...");
       router.push("/dashboard");
     }
-  }, [user, router]);
+  }, [user, loading, serverError, router]);
 
-  // Clean up auth state (errors/success) when unmounting
   useEffect(() => {
     return () => {
       dispatch(resetAuth());
     };
   }, [dispatch]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setLocalError("");
 
@@ -49,7 +53,9 @@ export default function Login() {
       return;
     }
 
-    dispatch(login({ email, password }));
+    console.log("=== DISPATCHING LOGIN ===");
+    console.log("Payload:", { email, password, role: "ARTISAN" });
+    dispatch(login({ email, password, role: "ARTISAN" }));
   };
 
   return (
@@ -95,7 +101,6 @@ export default function Login() {
                   disabled={loading}
                   required
                 />
-                {/* Eye toggle button positioned inside the input area */}
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
@@ -127,6 +132,22 @@ export default function Login() {
               </div>
             )}
 
+            {/* <Button
+              type="submit"
+              variant="primary"
+              fullWidth
+              size="lg"
+              disabled={loading}
+            >
+              {loading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 className="animate-spin" size={20} />
+                  <span>Authenticating...</span>
+                </div>
+              ) : (
+                "Sign In"
+              )}
+            </Button> */}
             <Button
               type="submit"
               variant="primary"

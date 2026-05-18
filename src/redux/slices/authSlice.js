@@ -53,7 +53,6 @@ export const login = createAsyncThunk(
   },
 );
 
-// NEW: Thunk for updating KYC and Bank Details
 export const updateKYC = createAsyncThunk(
   "auth/updateKYC",
   async (kycData, { rejectWithValue }) => {
@@ -71,7 +70,11 @@ export const updateKYC = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: null,
+    user:
+      typeof window !== "undefined"
+        ? JSON.parse(localStorage.getItem("user") || "null")
+        : null,
+    token: typeof window !== "undefined" ? localStorage.getItem("token") : null,
     loading: false,
     error: null,
     success: false,
@@ -84,9 +87,13 @@ const authSlice = createSlice({
     },
     logout: (state) => {
       state.user = null;
+      state.token = null;
       state.success = false;
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
     },
-    // ADDED: Missing updateProfile reducer for src/views/Profile.jsx
     updateProfile: (state, action) => {
       if (state.user) {
         state.user = { ...state.user, ...action.payload };
@@ -115,8 +122,16 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
+        state.user = action.payload.data.user;
+        state.token = action.payload.data.token;
         state.success = true;
+        if (typeof window !== "undefined") {
+          localStorage.setItem("token", action.payload.data.token);
+          localStorage.setItem(
+            "user",
+            JSON.stringify(action.payload.data.user),
+          );
+        }
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
@@ -128,7 +143,6 @@ const authSlice = createSlice({
       })
       .addCase(updateKYC.fulfilled, (state, action) => {
         state.loading = false;
-        // Merge the new KYC/Bank data into the current user object
         state.user = {
           ...state.user,
           kycStatus: action.payload.kycStatus,
@@ -142,6 +156,5 @@ const authSlice = createSlice({
   },
 });
 
-// Added updateProfile to the exports
 export const { resetAuth, logout, updateProfile } = authSlice.actions;
 export default authSlice.reducer;

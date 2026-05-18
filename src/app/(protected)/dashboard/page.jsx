@@ -1,5 +1,5 @@
-import AppShell from '../../components/layout/AppShell';
-import Dashboard from '../../views/Dashboard';
+import AppShell from '../../../components/layout/AppShell';
+import Dashboard from '../../../views/Dashboard';
 
 export default function DashboardPage() {
   return (
