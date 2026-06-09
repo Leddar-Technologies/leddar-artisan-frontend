@@ -420,9 +420,23 @@ export default function Signup() {
                     />
                     <span className="text-sm text-neutral-700 font-medium">
                       I agree to the{" "}
-                      <span className="text-leather underline">
-                        Terms and Conditions
-                      </span>
+                      <Link
+                        href="/terms-and-conditions"
+                        target="_blank"
+                        className="text-leather underline hover:text-espresso"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Terms &amp; Conditions
+                      </Link>{" "}
+                      and{" "}
+                      <Link
+                        href="/privacy-policy"
+                        target="_blank"
+                        className="text-leather underline hover:text-espresso"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Privacy Policy
+                      </Link>
                     </span>
                   </label>
                   <ErrorMsg message={errors.terms} />
