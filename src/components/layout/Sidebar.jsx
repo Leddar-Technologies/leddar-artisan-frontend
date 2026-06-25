@@ -3,17 +3,18 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Home, Briefcase, Wallet, User, FileCheck } from "lucide-react";
+import { Home, Briefcase, Wallet, User, FileCheck, Landmark } from "lucide-react";
 
 export default function Sidebar({ isOpen, onClose }) {
   const pathname = usePathname();
 
   const menuItems = [
-    { href: "/dashboard", label: "Dashboard", icon: Home },
-    { href: "/kyc", label: "KYC Verification", icon: FileCheck },
-    { href: "/jobs", label: "Assigned Jobs", icon: Briefcase },
-    { href: "/payments", label: "Payments", icon: Wallet },
-    { href: "/profile", label: "Profile", icon: User },
+    { href: "/dashboard", label: "Dashboard",              icon: Home },
+    { href: "/kyc",       label: "Identity Verification",  icon: FileCheck },
+    { href: "/jobs",      label: "My Jobs",                icon: Briefcase },
+    { href: "/payments",      label: "My Earnings",            icon: Wallet },
+    { href: "/bank-details",  label: "Bank Details",           icon: Landmark },
+    { href: "/profile",       label: "My Profile",             icon: User },
   ];
 
   return (

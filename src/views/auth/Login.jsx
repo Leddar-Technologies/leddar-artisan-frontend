@@ -11,15 +11,10 @@ import Button from "../../components/ui/Button";
 import { LogIn, Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
-  console.log("=== LOGIN COMPONENT RENDERED ===");
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const {
-    user,
-    loading,
-    error: serverError,
-  } = useSelector((state) => state.auth);
+  const { loading, error: serverError } = useSelector((state) => state.auth);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,24 +22,10 @@ export default function Login() {
   const [localError, setLocalError] = useState("");
 
   useEffect(() => {
-    console.log("=== AUTH STATE ===");
-    console.log("user:", user);
-    console.log("loading:", loading);
-    console.log("serverError:", serverError);
-
-    if (user) {
-      console.log("User found, redirecting to /dashboard...");
-      router.push("/dashboard");
-    }
-  }, [user, loading, serverError, router]);
-
-  useEffect(() => {
-    return () => {
-      dispatch(resetAuth());
-    };
+    return () => { dispatch(resetAuth()); };
   }, [dispatch]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLocalError("");
 
@@ -53,9 +34,10 @@ export default function Login() {
       return;
     }
 
-    console.log("=== DISPATCHING LOGIN ===");
-    console.log("Payload:", { email, password, role: "ARTISAN" });
-    dispatch(login({ email, password, role: "ARTISAN" }));
+    const result = await dispatch(login({ email, password, role: "ARTISAN" }));
+    if (login.fulfilled.match(result)) {
+      router.push("/dashboard");
+    }
   };
 
   return (

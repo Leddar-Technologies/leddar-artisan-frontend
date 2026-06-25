@@ -31,12 +31,30 @@ export default function Signup() {
   const [formData, setFormData] = useState({
     fullName: "",
     productionGender: "",
-    specialty: "",
     email: "",
-    whatsapp: "", // Added whatsapp to state
+    whatsapp: "",
+    capacityPerWeek: "",
+    numberOfWorkers: "",
     password: "",
     confirmPassword: "",
   });
+
+  const [selectedSpecialties, setSelectedSpecialties] = useState([]);
+
+  const SPECIALTIES = [
+    { value: "BAGS",    label: "Bags & Accessories" },
+    { value: "WALLETS", label: "Wallets & Small Goods" },
+    { value: "BELTS",   label: "Belts" },
+    { value: "SHOES",   label: "Footwear" },
+    { value: "JACKETS", label: "Apparel / Jackets" },
+  ];
+
+  const toggleSpecialty = (value) => {
+    setSelectedSpecialties((prev) =>
+      prev.includes(value) ? prev.filter((s) => s !== value) : [...prev, value]
+    );
+    if (errors.specialty) setErrors((prev) => ({ ...prev, specialty: "" }));
+  };
 
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [errors, setErrors] = useState({}); // Stores validation messages for each field
@@ -64,8 +82,8 @@ export default function Signup() {
     if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
     if (!formData.productionGender)
       newErrors.productionGender = "Please select a production category";
-    if (!formData.specialty)
-      newErrors.specialty = "Please select your craft specialty";
+    if (selectedSpecialties.length === 0)
+      newErrors.specialty = "Please select at least one specialty";
     if (!formData.whatsapp.trim())
       newErrors.whatsapp = "WhatsApp number is required";
 
@@ -137,6 +155,8 @@ export default function Signup() {
 
     const data = new FormData();
     Object.keys(formData).forEach((key) => data.append(key, formData[key]));
+    // Send each specialty value individually so the server receives an array
+    selectedSpecialties.forEach((s) => data.append("specialty", s));
     data.append("acceptedTerms", String(acceptedTerms));
     portfolioImages.forEach((file) => data.append("portfolio", file));
 
@@ -237,29 +257,34 @@ export default function Signup() {
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-sm font-semibold text-neutral-900 mb-1.5">
-                    Your Specialty *
-                  </label>
-                  <select
-                    value={formData.specialty}
-                    onChange={(e) => handleChange("specialty", e.target.value)}
-                    className={`w-full px-4 py-2.5 border rounded-xl bg-white outline-none transition-all ${
-                      errors.specialty
-                        ? "border-red-500 focus:ring-2 focus:ring-red-100"
-                        : "border-surface-500 focus:ring-2 focus:ring-gold"
-                    }`}
-                  >
-                    <option value="">Select Specialty</option>
-                    <option value="BAGS">Bags & Accessories</option>
-                    <option value="WALLETS">Wallets & Small Goods</option>
-                    <option value="BELTS">Belts</option>
-                    <option value="SHOES">Footwear</option>
-                    <option value="JACKETS">Apparel / Jackets</option>
-                  </select>
-                  <ErrorMsg message={errors.specialty} />
+              {/* Specialty — multi-select chips */}
+              <div>
+                <label className="block text-sm font-semibold text-neutral-900 mb-2">
+                  Your Specialties * <span className="font-normal text-neutral-500">(select all that apply)</span>
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {SPECIALTIES.map(({ value, label }) => {
+                    const active = selectedSpecialties.includes(value);
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => toggleSpecialty(value)}
+                        className={`px-4 py-2 rounded-full border text-sm font-medium transition-all ${
+                          active
+                            ? "bg-leather border-leather text-white"
+                            : "bg-white border-surface-500 text-neutral-700 hover:border-leather hover:text-leather"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
                 </div>
+                <ErrorMsg message={errors.specialty} />
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-5">
                 <div>
                   <Input
                     type="email"
@@ -273,10 +298,6 @@ export default function Signup() {
                   />
                   <ErrorMsg message={errors.email} />
                 </div>
-              </div>
-
-              {/* Added WhatsApp Field */}
-              <div className="grid md:grid-cols-2 gap-5">
                 <div>
                   <Input
                     label="WhatsApp Number *"
@@ -288,6 +309,30 @@ export default function Signup() {
                     }
                   />
                   <ErrorMsg message={errors.whatsapp} />
+                </div>
+              </div>
+
+              {/* Capacity fields */}
+              <div className="grid md:grid-cols-2 gap-5">
+                <div>
+                  <Input
+                    type="number"
+                    label="Production Capacity (units/week)"
+                    placeholder="e.g. 50"
+                    value={formData.capacityPerWeek}
+                    onChange={(e) => handleChange("capacityPerWeek", e.target.value)}
+                  />
+                  <p className="text-xs text-neutral-500 mt-1">How many units can you produce per week?</p>
+                </div>
+                <div>
+                  <Input
+                    type="number"
+                    label="Number of Workers"
+                    placeholder="e.g. 5"
+                    value={formData.numberOfWorkers}
+                    onChange={(e) => handleChange("numberOfWorkers", e.target.value)}
+                  />
+                  <p className="text-xs text-neutral-500 mt-1">Including yourself</p>
                 </div>
               </div>
 
@@ -420,9 +465,23 @@ export default function Signup() {
                     />
                     <span className="text-sm text-neutral-700 font-medium">
                       I agree to the{" "}
-                      <span className="text-leather underline">
-                        Terms and Conditions
-                      </span>
+                      <Link
+                        href="/terms-and-conditions"
+                        target="_blank"
+                        className="text-leather underline hover:text-espresso"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Terms &amp; Conditions
+                      </Link>{" "}
+                      and{" "}
+                      <Link
+                        href="/privacy-policy"
+                        target="_blank"
+                        className="text-leather underline hover:text-espresso"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Privacy Policy
+                      </Link>
                     </span>
                   </label>
                   <ErrorMsg message={errors.terms} />
