@@ -216,7 +216,7 @@ export default function PrivacyPolicy() {
                     <>
                       <p className="mb-3 text-neutral-800">LEDDAR respects your privacy and is committed to protecting your personal data. This Privacy Policy explains how LEDDAR collects, uses, stores, shares, and protects personal data when you:</p>
                       <BulletList items={["visit our website", "create an account", "apply as a Brand or Artisan", "complete verification", "submit a production request", "request a sample", "make or receive payments", "communicate through the platform", "contact support", "otherwise use LEDDAR's services"]} />
-                      <p className="mt-3 text-neutral-800">This Privacy Policy should be read together with our{" "}<Link href="/terms-and-conditions" target="_blank" rel="noopener noreferrer" className="text-leather underline hover:text-espresso">Terms &amp; Conditions</Link>{" "}and any related policies referenced on the platform.</p>
+                      <p className="mt-3 text-neutral-800">This Privacy Policy should be read together with our{" "}<Link href="/terms-and-conditions" className="text-leather underline hover:text-espresso">Terms &amp; Conditions</Link>{" "}and any related policies referenced on the platform.</p>
                     </>
                   )
                 },
@@ -468,7 +468,7 @@ export default function PrivacyPolicy() {
                     <ChevronLeft className="h-4 w-4" />
                     Back to Signup
                   </Link>
-                  <Link href="/terms-and-conditions" target="_blank" rel="noopener noreferrer" className="text-sm text-leather underline hover:text-espresso transition-colors">
+                  <Link href="/terms-and-conditions" className="text-sm text-leather underline hover:text-espresso transition-colors">
                     View Terms &amp; Conditions →
                   </Link>
                 </div>
