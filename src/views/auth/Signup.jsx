@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { registerArtisan, resetAuth } from "../../redux/slices/authSlice";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
+import PhoneInput, { validatePhone, normalizePhone } from "../../components/ui/PhoneInput";
 import {
   UserPlus,
   Upload,
@@ -17,6 +18,7 @@ import {
   EyeOff,
   X,
   ArrowLeft,
+  ChevronDown,
 } from "lucide-react";
 
 export default function Signup() {
@@ -31,14 +33,50 @@ export default function Signup() {
   const [formData, setFormData] = useState({
     fullName: "",
     productionGender: "",
-    specialty: "",
     email: "",
-    whatsapp: "", // Added whatsapp to state
+    whatsapp: "",
+    capacityPerWeek: "",
+    numberOfWorkers: "",
     password: "",
     confirmPassword: "",
   });
 
+  const [selectedSpecialties, setSelectedSpecialties] = useState([]);
+
+  const SPECIALTIES = [
+    { value: "SHOES_AND_BOOTS",       label: "Shoes & Boots" },
+    { value: "SLIPPERS_AND_SANDALS",  label: "Slippers & Sandals" },
+    { value: "WOMEN_BAGS",            label: "Women Bags" },
+    { value: "OFFICE_AND_TRAVEL_BAGS",label: "Office & Travel Bags" },
+    { value: "WALLETS_AND_BELTS",     label: "Wallets & Belts" },
+    { value: "SMALL_LEATHER_GOODS",   label: "Small Leather Goods" },
+    { value: "LEATHER_WEARS",         label: "Leather Wears" },
+    { value: "OTHERS",                label: "Others" },
+  ];
+
+  const toggleSpecialty = (value) => {
+    setSelectedSpecialties((prev) =>
+      prev.includes(value) ? prev.filter((s) => s !== value) : [...prev, value]
+    );
+    if (errors.specialty) setErrors((prev) => ({ ...prev, specialty: "" }));
+  };
+
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+
+  const PRODUCTION_OPTIONS = [
+    { value: "male",   label: "Male Wear" },
+    { value: "female", label: "Female Wear" },
+    { value: "both",   label: "Unisex / Both" },
+  ];
+  const [genderOpen, setGenderOpen] = useState(false);
+  const genderRef = useRef(null);
+  useEffect(() => {
+    function handleOutside(e) {
+      if (genderRef.current && !genderRef.current.contains(e.target)) setGenderOpen(false);
+    }
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, []);
   const [errors, setErrors] = useState({}); // Stores validation messages for each field
   const [portfolioImages, setPortfolioImages] = useState([]);
   const [portfolioError, setPortfolioError] = useState("");
@@ -64,10 +102,13 @@ export default function Signup() {
     if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
     if (!formData.productionGender)
       newErrors.productionGender = "Please select a production category";
-    if (!formData.specialty)
-      newErrors.specialty = "Please select your craft specialty";
-    if (!formData.whatsapp.trim())
+    if (selectedSpecialties.length === 0)
+      newErrors.specialty = "Please select at least one specialty";
+    if (!formData.whatsapp.trim()) {
       newErrors.whatsapp = "WhatsApp number is required";
+    } else if (!validatePhone(normalizePhone(formData.whatsapp))) {
+      newErrors.whatsapp = "Must include country code, e.g. +2348141955755";
+    }
 
     // Email Validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -137,6 +178,8 @@ export default function Signup() {
 
     const data = new FormData();
     Object.keys(formData).forEach((key) => data.append(key, formData[key]));
+    // Send each specialty value individually so the server receives an array
+    selectedSpecialties.forEach((s) => data.append("specialty", s));
     data.append("acceptedTerms", String(acceptedTerms));
     portfolioImages.forEach((file) => data.append("portfolio", file));
 
@@ -201,7 +244,7 @@ export default function Signup() {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Basic Details */}
               <div className="grid md:grid-cols-2 gap-5">
-                <div>
+                <div className="w-full">
                   <Input
                     label="Full Name *"
                     placeholder="e.g. Kola Lawal"
@@ -213,53 +256,89 @@ export default function Signup() {
                   />
                   <ErrorMsg message={errors.fullName} />
                 </div>
-                <div>
+                <div className="w-full">
                   <label className="block text-sm font-semibold text-neutral-900 mb-1.5">
-                    Production For *
+                    Who do you produce for? *
                   </label>
-                  <select
-                    value={formData.productionGender}
-                    onChange={(e) =>
-                      handleChange("productionGender", e.target.value)
-                    }
-                    className={`w-full px-4 py-2.5 border rounded-xl bg-white outline-none transition-all ${
-                      errors.productionGender
-                        ? "border-red-500 focus:ring-2 focus:ring-red-100"
-                        : "border-surface-500 focus:ring-2 focus:ring-gold"
-                    }`}
-                  >
-                    <option value="">Select Category</option>
-                    <option value="male">Male Wear</option>
-                    <option value="female">Female Wear</option>
-                    <option value="both">Unisex / Both</option>
-                  </select>
+                  <div ref={genderRef} className="relative w-full">
+                    <button
+                      type="button"
+                      onClick={() => setGenderOpen((o) => !o)}
+                      className={`w-full flex items-center justify-between px-4 py-2.5 border rounded-xl outline-none transition-all focus:ring-2 focus:ring-[#8B4513]/30 focus:border-leather text-base leading-6 ${
+                        errors.productionGender
+                          ? "border-danger bg-red-50"
+                          : formData.productionGender
+                          ? "border-leather bg-[#FDF5EE] text-neutral-900"
+                          : "border-surface-500 bg-white text-neutral-400"
+                      } ${genderOpen ? "ring-2 ring-[#8B4513]/30 border-leather" : ""}`}
+                    >
+                      <span>
+                        {PRODUCTION_OPTIONS.find(o => o.value === formData.productionGender)?.label || "Select Category"}
+                      </span>
+                      <ChevronDown
+                        size={16}
+                        className={`text-[#8B6355] transition-transform duration-200 ${genderOpen ? "rotate-180" : ""}`}
+                      />
+                    </button>
+
+                    {genderOpen && (
+                      <div className="absolute z-50 mt-1 w-full rounded-xl border border-surface-400 bg-white shadow-xl overflow-hidden">
+                        {PRODUCTION_OPTIONS.map((opt, i) => {
+                          const isSelected = formData.productionGender === opt.value;
+                          return (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              onClick={() => {
+                                handleChange("productionGender", opt.value);
+                                setGenderOpen(false);
+                              }}
+                              className={`w-full flex items-center justify-between px-4 py-3 text-sm transition-colors ${
+                                isSelected
+                                  ? "bg-leather text-white font-semibold"
+                                  : "text-neutral-900 hover:bg-[#FDF5EE] hover:text-leather"
+                              } ${i !== 0 ? "border-t border-surface-300" : ""}`}
+                            >
+                              <span>{opt.label}</span>
+                              {isSelected && <CheckCircle size={14} />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                   <ErrorMsg message={errors.productionGender} />
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-sm font-semibold text-neutral-900 mb-1.5">
-                    Your Specialty *
-                  </label>
-                  <select
-                    value={formData.specialty}
-                    onChange={(e) => handleChange("specialty", e.target.value)}
-                    className={`w-full px-4 py-2.5 border rounded-xl bg-white outline-none transition-all ${
-                      errors.specialty
-                        ? "border-red-500 focus:ring-2 focus:ring-red-100"
-                        : "border-surface-500 focus:ring-2 focus:ring-gold"
-                    }`}
-                  >
-                    <option value="">Select Specialty</option>
-                    <option value="BAGS">Bags & Accessories</option>
-                    <option value="WALLETS">Wallets & Small Goods</option>
-                    <option value="BELTS">Belts</option>
-                    <option value="SHOES">Footwear</option>
-                    <option value="JACKETS">Apparel / Jackets</option>
-                  </select>
-                  <ErrorMsg message={errors.specialty} />
+              {/* Specialty — multi-select chips */}
+              <div>
+                <label className="block text-sm font-semibold text-neutral-900 mb-2">
+                  Your Specialties * <span className="font-normal text-neutral-500">(select all that apply)</span>
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {SPECIALTIES.map(({ value, label }) => {
+                    const active = selectedSpecialties.includes(value);
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => toggleSpecialty(value)}
+                        className={`px-4 py-2 rounded-full border text-sm font-medium transition-all ${
+                          active
+                            ? "bg-leather border-leather text-white"
+                            : "bg-white border-surface-500 text-neutral-700 hover:border-leather hover:text-leather"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
                 </div>
+                <ErrorMsg message={errors.specialty} />
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-5">
                 <div>
                   <Input
                     type="email"
@@ -273,21 +352,36 @@ export default function Signup() {
                   />
                   <ErrorMsg message={errors.email} />
                 </div>
+                <div>
+                  <PhoneInput
+                    value={formData.whatsapp}
+                    onChange={(e) => handleChange("whatsapp", e.target.value)}
+                    error={errors.whatsapp}
+                  />
+                </div>
               </div>
 
-              {/* Added WhatsApp Field */}
+              {/* Capacity fields */}
               <div className="grid md:grid-cols-2 gap-5">
                 <div>
                   <Input
-                    label="WhatsApp Number *"
-                    placeholder="e.g. +234..."
-                    value={formData.whatsapp}
-                    onChange={(e) => handleChange("whatsapp", e.target.value)}
-                    className={
-                      errors.whatsapp ? "border-red-500 focus:ring-red-200" : ""
-                    }
+                    type="number"
+                    label="Production Capacity (units/week)"
+                    placeholder="e.g. 50"
+                    value={formData.capacityPerWeek}
+                    onChange={(e) => handleChange("capacityPerWeek", e.target.value)}
                   />
-                  <ErrorMsg message={errors.whatsapp} />
+                  <p className="text-xs text-neutral-500 mt-1">How many units can you produce per week?</p>
+                </div>
+                <div>
+                  <Input
+                    type="number"
+                    label="Number of Workers"
+                    placeholder="e.g. 5"
+                    value={formData.numberOfWorkers}
+                    onChange={(e) => handleChange("numberOfWorkers", e.target.value)}
+                  />
+                  <p className="text-xs text-neutral-500 mt-1">Including yourself</p>
                 </div>
               </div>
 

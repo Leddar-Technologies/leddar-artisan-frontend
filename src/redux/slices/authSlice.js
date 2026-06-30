@@ -4,27 +4,12 @@ import axios from "axios";
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 
-const mapSpecialtyToEnum = (displayValue) => {
-  if (!displayValue) return "BAGS";
-  const val = displayValue.toLowerCase();
-  if (val.includes("footwear") || val.includes("shoes")) return "SHOES";
-  if (val.includes("bag")) return "BAGS";
-  if (val.includes("wallet")) return "WALLETS";
-  if (val.includes("belt")) return "BELTS";
-  if (val.includes("jacket")) return "JACKETS";
-  return "BAGS";
-};
-
 // --- THUNKS ---
 
 export const registerArtisan = createAsyncThunk(
   "auth/registerArtisan",
   async (formData, { rejectWithValue }) => {
     try {
-      const rawSpecialty = formData.get("specialty");
-      if (rawSpecialty) {
-        formData.set("specialty", mapSpecialtyToEnum(rawSpecialty));
-      }
       const response = await axios.post(
         `${API_URL}/auth/register/artisan`,
         formData,
@@ -48,7 +33,14 @@ export const login = createAsyncThunk(
       const response = await axios.post(`${API_URL}/auth/login`, credentials);
       return response.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.error || "Login failed");
+      // No response = network/server is down
+      if (!err.response) {
+        return rejectWithValue("Unable to connect. Please check your internet connection and try again.");
+      }
+      // Server always returns a sanitized, friendly error message
+      return rejectWithValue(
+        err.response?.data?.error || "Something went wrong. Please try again."
+      );
     }
   },
 );
@@ -122,15 +114,16 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.data.user;
+        state.user  = action.payload.data.user;
         state.token = action.payload.data.token;
+        state.refreshToken = action.payload.data.refreshToken || null;
         state.success = true;
         if (typeof window !== "undefined") {
           localStorage.setItem("token", action.payload.data.token);
-          localStorage.setItem(
-            "user",
-            JSON.stringify(action.payload.data.user),
-          );
+          if (action.payload.data.refreshToken) {
+            localStorage.setItem("refreshToken", action.payload.data.refreshToken);
+          }
+          localStorage.setItem("user", JSON.stringify(action.payload.data.user));
         }
       })
       .addCase(login.rejected, (state, action) => {

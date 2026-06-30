@@ -1,0 +1,1564 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for app/privacy-policy/page.jsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">app/privacy-policy</a> page.jsx</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>0/40</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/20</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/23</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>0/38</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a>
+<a name='L188'></a><a href='#L188'>188</a>
+<a name='L189'></a><a href='#L189'>189</a>
+<a name='L190'></a><a href='#L190'>190</a>
+<a name='L191'></a><a href='#L191'>191</a>
+<a name='L192'></a><a href='#L192'>192</a>
+<a name='L193'></a><a href='#L193'>193</a>
+<a name='L194'></a><a href='#L194'>194</a>
+<a name='L195'></a><a href='#L195'>195</a>
+<a name='L196'></a><a href='#L196'>196</a>
+<a name='L197'></a><a href='#L197'>197</a>
+<a name='L198'></a><a href='#L198'>198</a>
+<a name='L199'></a><a href='#L199'>199</a>
+<a name='L200'></a><a href='#L200'>200</a>
+<a name='L201'></a><a href='#L201'>201</a>
+<a name='L202'></a><a href='#L202'>202</a>
+<a name='L203'></a><a href='#L203'>203</a>
+<a name='L204'></a><a href='#L204'>204</a>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a>
+<a name='L209'></a><a href='#L209'>209</a>
+<a name='L210'></a><a href='#L210'>210</a>
+<a name='L211'></a><a href='#L211'>211</a>
+<a name='L212'></a><a href='#L212'>212</a>
+<a name='L213'></a><a href='#L213'>213</a>
+<a name='L214'></a><a href='#L214'>214</a>
+<a name='L215'></a><a href='#L215'>215</a>
+<a name='L216'></a><a href='#L216'>216</a>
+<a name='L217'></a><a href='#L217'>217</a>
+<a name='L218'></a><a href='#L218'>218</a>
+<a name='L219'></a><a href='#L219'>219</a>
+<a name='L220'></a><a href='#L220'>220</a>
+<a name='L221'></a><a href='#L221'>221</a>
+<a name='L222'></a><a href='#L222'>222</a>
+<a name='L223'></a><a href='#L223'>223</a>
+<a name='L224'></a><a href='#L224'>224</a>
+<a name='L225'></a><a href='#L225'>225</a>
+<a name='L226'></a><a href='#L226'>226</a>
+<a name='L227'></a><a href='#L227'>227</a>
+<a name='L228'></a><a href='#L228'>228</a>
+<a name='L229'></a><a href='#L229'>229</a>
+<a name='L230'></a><a href='#L230'>230</a>
+<a name='L231'></a><a href='#L231'>231</a>
+<a name='L232'></a><a href='#L232'>232</a>
+<a name='L233'></a><a href='#L233'>233</a>
+<a name='L234'></a><a href='#L234'>234</a>
+<a name='L235'></a><a href='#L235'>235</a>
+<a name='L236'></a><a href='#L236'>236</a>
+<a name='L237'></a><a href='#L237'>237</a>
+<a name='L238'></a><a href='#L238'>238</a>
+<a name='L239'></a><a href='#L239'>239</a>
+<a name='L240'></a><a href='#L240'>240</a>
+<a name='L241'></a><a href='#L241'>241</a>
+<a name='L242'></a><a href='#L242'>242</a>
+<a name='L243'></a><a href='#L243'>243</a>
+<a name='L244'></a><a href='#L244'>244</a>
+<a name='L245'></a><a href='#L245'>245</a>
+<a name='L246'></a><a href='#L246'>246</a>
+<a name='L247'></a><a href='#L247'>247</a>
+<a name='L248'></a><a href='#L248'>248</a>
+<a name='L249'></a><a href='#L249'>249</a>
+<a name='L250'></a><a href='#L250'>250</a>
+<a name='L251'></a><a href='#L251'>251</a>
+<a name='L252'></a><a href='#L252'>252</a>
+<a name='L253'></a><a href='#L253'>253</a>
+<a name='L254'></a><a href='#L254'>254</a>
+<a name='L255'></a><a href='#L255'>255</a>
+<a name='L256'></a><a href='#L256'>256</a>
+<a name='L257'></a><a href='#L257'>257</a>
+<a name='L258'></a><a href='#L258'>258</a>
+<a name='L259'></a><a href='#L259'>259</a>
+<a name='L260'></a><a href='#L260'>260</a>
+<a name='L261'></a><a href='#L261'>261</a>
+<a name='L262'></a><a href='#L262'>262</a>
+<a name='L263'></a><a href='#L263'>263</a>
+<a name='L264'></a><a href='#L264'>264</a>
+<a name='L265'></a><a href='#L265'>265</a>
+<a name='L266'></a><a href='#L266'>266</a>
+<a name='L267'></a><a href='#L267'>267</a>
+<a name='L268'></a><a href='#L268'>268</a>
+<a name='L269'></a><a href='#L269'>269</a>
+<a name='L270'></a><a href='#L270'>270</a>
+<a name='L271'></a><a href='#L271'>271</a>
+<a name='L272'></a><a href='#L272'>272</a>
+<a name='L273'></a><a href='#L273'>273</a>
+<a name='L274'></a><a href='#L274'>274</a>
+<a name='L275'></a><a href='#L275'>275</a>
+<a name='L276'></a><a href='#L276'>276</a>
+<a name='L277'></a><a href='#L277'>277</a>
+<a name='L278'></a><a href='#L278'>278</a>
+<a name='L279'></a><a href='#L279'>279</a>
+<a name='L280'></a><a href='#L280'>280</a>
+<a name='L281'></a><a href='#L281'>281</a>
+<a name='L282'></a><a href='#L282'>282</a>
+<a name='L283'></a><a href='#L283'>283</a>
+<a name='L284'></a><a href='#L284'>284</a>
+<a name='L285'></a><a href='#L285'>285</a>
+<a name='L286'></a><a href='#L286'>286</a>
+<a name='L287'></a><a href='#L287'>287</a>
+<a name='L288'></a><a href='#L288'>288</a>
+<a name='L289'></a><a href='#L289'>289</a>
+<a name='L290'></a><a href='#L290'>290</a>
+<a name='L291'></a><a href='#L291'>291</a>
+<a name='L292'></a><a href='#L292'>292</a>
+<a name='L293'></a><a href='#L293'>293</a>
+<a name='L294'></a><a href='#L294'>294</a>
+<a name='L295'></a><a href='#L295'>295</a>
+<a name='L296'></a><a href='#L296'>296</a>
+<a name='L297'></a><a href='#L297'>297</a>
+<a name='L298'></a><a href='#L298'>298</a>
+<a name='L299'></a><a href='#L299'>299</a>
+<a name='L300'></a><a href='#L300'>300</a>
+<a name='L301'></a><a href='#L301'>301</a>
+<a name='L302'></a><a href='#L302'>302</a>
+<a name='L303'></a><a href='#L303'>303</a>
+<a name='L304'></a><a href='#L304'>304</a>
+<a name='L305'></a><a href='#L305'>305</a>
+<a name='L306'></a><a href='#L306'>306</a>
+<a name='L307'></a><a href='#L307'>307</a>
+<a name='L308'></a><a href='#L308'>308</a>
+<a name='L309'></a><a href='#L309'>309</a>
+<a name='L310'></a><a href='#L310'>310</a>
+<a name='L311'></a><a href='#L311'>311</a>
+<a name='L312'></a><a href='#L312'>312</a>
+<a name='L313'></a><a href='#L313'>313</a>
+<a name='L314'></a><a href='#L314'>314</a>
+<a name='L315'></a><a href='#L315'>315</a>
+<a name='L316'></a><a href='#L316'>316</a>
+<a name='L317'></a><a href='#L317'>317</a>
+<a name='L318'></a><a href='#L318'>318</a>
+<a name='L319'></a><a href='#L319'>319</a>
+<a name='L320'></a><a href='#L320'>320</a>
+<a name='L321'></a><a href='#L321'>321</a>
+<a name='L322'></a><a href='#L322'>322</a>
+<a name='L323'></a><a href='#L323'>323</a>
+<a name='L324'></a><a href='#L324'>324</a>
+<a name='L325'></a><a href='#L325'>325</a>
+<a name='L326'></a><a href='#L326'>326</a>
+<a name='L327'></a><a href='#L327'>327</a>
+<a name='L328'></a><a href='#L328'>328</a>
+<a name='L329'></a><a href='#L329'>329</a>
+<a name='L330'></a><a href='#L330'>330</a>
+<a name='L331'></a><a href='#L331'>331</a>
+<a name='L332'></a><a href='#L332'>332</a>
+<a name='L333'></a><a href='#L333'>333</a>
+<a name='L334'></a><a href='#L334'>334</a>
+<a name='L335'></a><a href='#L335'>335</a>
+<a name='L336'></a><a href='#L336'>336</a>
+<a name='L337'></a><a href='#L337'>337</a>
+<a name='L338'></a><a href='#L338'>338</a>
+<a name='L339'></a><a href='#L339'>339</a>
+<a name='L340'></a><a href='#L340'>340</a>
+<a name='L341'></a><a href='#L341'>341</a>
+<a name='L342'></a><a href='#L342'>342</a>
+<a name='L343'></a><a href='#L343'>343</a>
+<a name='L344'></a><a href='#L344'>344</a>
+<a name='L345'></a><a href='#L345'>345</a>
+<a name='L346'></a><a href='#L346'>346</a>
+<a name='L347'></a><a href='#L347'>347</a>
+<a name='L348'></a><a href='#L348'>348</a>
+<a name='L349'></a><a href='#L349'>349</a>
+<a name='L350'></a><a href='#L350'>350</a>
+<a name='L351'></a><a href='#L351'>351</a>
+<a name='L352'></a><a href='#L352'>352</a>
+<a name='L353'></a><a href='#L353'>353</a>
+<a name='L354'></a><a href='#L354'>354</a>
+<a name='L355'></a><a href='#L355'>355</a>
+<a name='L356'></a><a href='#L356'>356</a>
+<a name='L357'></a><a href='#L357'>357</a>
+<a name='L358'></a><a href='#L358'>358</a>
+<a name='L359'></a><a href='#L359'>359</a>
+<a name='L360'></a><a href='#L360'>360</a>
+<a name='L361'></a><a href='#L361'>361</a>
+<a name='L362'></a><a href='#L362'>362</a>
+<a name='L363'></a><a href='#L363'>363</a>
+<a name='L364'></a><a href='#L364'>364</a>
+<a name='L365'></a><a href='#L365'>365</a>
+<a name='L366'></a><a href='#L366'>366</a>
+<a name='L367'></a><a href='#L367'>367</a>
+<a name='L368'></a><a href='#L368'>368</a>
+<a name='L369'></a><a href='#L369'>369</a>
+<a name='L370'></a><a href='#L370'>370</a>
+<a name='L371'></a><a href='#L371'>371</a>
+<a name='L372'></a><a href='#L372'>372</a>
+<a name='L373'></a><a href='#L373'>373</a>
+<a name='L374'></a><a href='#L374'>374</a>
+<a name='L375'></a><a href='#L375'>375</a>
+<a name='L376'></a><a href='#L376'>376</a>
+<a name='L377'></a><a href='#L377'>377</a>
+<a name='L378'></a><a href='#L378'>378</a>
+<a name='L379'></a><a href='#L379'>379</a>
+<a name='L380'></a><a href='#L380'>380</a>
+<a name='L381'></a><a href='#L381'>381</a>
+<a name='L382'></a><a href='#L382'>382</a>
+<a name='L383'></a><a href='#L383'>383</a>
+<a name='L384'></a><a href='#L384'>384</a>
+<a name='L385'></a><a href='#L385'>385</a>
+<a name='L386'></a><a href='#L386'>386</a>
+<a name='L387'></a><a href='#L387'>387</a>
+<a name='L388'></a><a href='#L388'>388</a>
+<a name='L389'></a><a href='#L389'>389</a>
+<a name='L390'></a><a href='#L390'>390</a>
+<a name='L391'></a><a href='#L391'>391</a>
+<a name='L392'></a><a href='#L392'>392</a>
+<a name='L393'></a><a href='#L393'>393</a>
+<a name='L394'></a><a href='#L394'>394</a>
+<a name='L395'></a><a href='#L395'>395</a>
+<a name='L396'></a><a href='#L396'>396</a>
+<a name='L397'></a><a href='#L397'>397</a>
+<a name='L398'></a><a href='#L398'>398</a>
+<a name='L399'></a><a href='#L399'>399</a>
+<a name='L400'></a><a href='#L400'>400</a>
+<a name='L401'></a><a href='#L401'>401</a>
+<a name='L402'></a><a href='#L402'>402</a>
+<a name='L403'></a><a href='#L403'>403</a>
+<a name='L404'></a><a href='#L404'>404</a>
+<a name='L405'></a><a href='#L405'>405</a>
+<a name='L406'></a><a href='#L406'>406</a>
+<a name='L407'></a><a href='#L407'>407</a>
+<a name='L408'></a><a href='#L408'>408</a>
+<a name='L409'></a><a href='#L409'>409</a>
+<a name='L410'></a><a href='#L410'>410</a>
+<a name='L411'></a><a href='#L411'>411</a>
+<a name='L412'></a><a href='#L412'>412</a>
+<a name='L413'></a><a href='#L413'>413</a>
+<a name='L414'></a><a href='#L414'>414</a>
+<a name='L415'></a><a href='#L415'>415</a>
+<a name='L416'></a><a href='#L416'>416</a>
+<a name='L417'></a><a href='#L417'>417</a>
+<a name='L418'></a><a href='#L418'>418</a>
+<a name='L419'></a><a href='#L419'>419</a>
+<a name='L420'></a><a href='#L420'>420</a>
+<a name='L421'></a><a href='#L421'>421</a>
+<a name='L422'></a><a href='#L422'>422</a>
+<a name='L423'></a><a href='#L423'>423</a>
+<a name='L424'></a><a href='#L424'>424</a>
+<a name='L425'></a><a href='#L425'>425</a>
+<a name='L426'></a><a href='#L426'>426</a>
+<a name='L427'></a><a href='#L427'>427</a>
+<a name='L428'></a><a href='#L428'>428</a>
+<a name='L429'></a><a href='#L429'>429</a>
+<a name='L430'></a><a href='#L430'>430</a>
+<a name='L431'></a><a href='#L431'>431</a>
+<a name='L432'></a><a href='#L432'>432</a>
+<a name='L433'></a><a href='#L433'>433</a>
+<a name='L434'></a><a href='#L434'>434</a>
+<a name='L435'></a><a href='#L435'>435</a>
+<a name='L436'></a><a href='#L436'>436</a>
+<a name='L437'></a><a href='#L437'>437</a>
+<a name='L438'></a><a href='#L438'>438</a>
+<a name='L439'></a><a href='#L439'>439</a>
+<a name='L440'></a><a href='#L440'>440</a>
+<a name='L441'></a><a href='#L441'>441</a>
+<a name='L442'></a><a href='#L442'>442</a>
+<a name='L443'></a><a href='#L443'>443</a>
+<a name='L444'></a><a href='#L444'>444</a>
+<a name='L445'></a><a href='#L445'>445</a>
+<a name='L446'></a><a href='#L446'>446</a>
+<a name='L447'></a><a href='#L447'>447</a>
+<a name='L448'></a><a href='#L448'>448</a>
+<a name='L449'></a><a href='#L449'>449</a>
+<a name='L450'></a><a href='#L450'>450</a>
+<a name='L451'></a><a href='#L451'>451</a>
+<a name='L452'></a><a href='#L452'>452</a>
+<a name='L453'></a><a href='#L453'>453</a>
+<a name='L454'></a><a href='#L454'>454</a>
+<a name='L455'></a><a href='#L455'>455</a>
+<a name='L456'></a><a href='#L456'>456</a>
+<a name='L457'></a><a href='#L457'>457</a>
+<a name='L458'></a><a href='#L458'>458</a>
+<a name='L459'></a><a href='#L459'>459</a>
+<a name='L460'></a><a href='#L460'>460</a>
+<a name='L461'></a><a href='#L461'>461</a>
+<a name='L462'></a><a href='#L462'>462</a>
+<a name='L463'></a><a href='#L463'>463</a>
+<a name='L464'></a><a href='#L464'>464</a>
+<a name='L465'></a><a href='#L465'>465</a>
+<a name='L466'></a><a href='#L466'>466</a>
+<a name='L467'></a><a href='#L467'>467</a>
+<a name='L468'></a><a href='#L468'>468</a>
+<a name='L469'></a><a href='#L469'>469</a>
+<a name='L470'></a><a href='#L470'>470</a>
+<a name='L471'></a><a href='#L471'>471</a>
+<a name='L472'></a><a href='#L472'>472</a>
+<a name='L473'></a><a href='#L473'>473</a>
+<a name='L474'></a><a href='#L474'>474</a>
+<a name='L475'></a><a href='#L475'>475</a>
+<a name='L476'></a><a href='#L476'>476</a>
+<a name='L477'></a><a href='#L477'>477</a>
+<a name='L478'></a><a href='#L478'>478</a>
+<a name='L479'></a><a href='#L479'>479</a>
+<a name='L480'></a><a href='#L480'>480</a>
+<a name='L481'></a><a href='#L481'>481</a>
+<a name='L482'></a><a href='#L482'>482</a>
+<a name='L483'></a><a href='#L483'>483</a>
+<a name='L484'></a><a href='#L484'>484</a>
+<a name='L485'></a><a href='#L485'>485</a>
+<a name='L486'></a><a href='#L486'>486</a>
+<a name='L487'></a><a href='#L487'>487</a>
+<a name='L488'></a><a href='#L488'>488</a>
+<a name='L489'></a><a href='#L489'>489</a>
+<a name='L490'></a><a href='#L490'>490</a>
+<a name='L491'></a><a href='#L491'>491</a>
+<a name='L492'></a><a href='#L492'>492</a>
+<a name='L493'></a><a href='#L493'>493</a>
+<a name='L494'></a><a href='#L494'>494</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">"use client";
+&nbsp;
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { ChevronLeft, ArrowUp, Menu, X } from "lucide-react";
+&nbsp;
+const TOC = <span class="cstat-no" title="statement not covered" >[</span>
+  { id: "s1",  num: 1,  title: "Introduction" },
+  { id: "s2",  num: 2,  title: "Who We Are" },
+  { id: "s3",  num: 3,  title: "Scope of This Policy" },
+  { id: "s4",  num: 4,  title: "Data We Collect" },
+  { id: "s5",  num: 5,  title: "How We Collect Data" },
+  { id: "s6",  num: 6,  title: "Why We Process Data" },
+  { id: "s7",  num: 7,  title: "Lawful Bases" },
+  { id: "s8",  num: 8,  title: "Cookies" },
+  { id: "s9",  num: 9,  title: "Sharing Data" },
+  { id: "s10", num: 10, title: "Cross-Border Transfers" },
+  { id: "s11", num: 11, title: "Data Security" },
+  { id: "s12", num: 12, title: "Data Breaches" },
+  { id: "s13", num: 13, title: "Data Retention" },
+  { id: "s14", num: 14, title: "Your Rights" },
+  { id: "s15", num: 15, title: "Children" },
+  { id: "s16", num: 16, title: "Automated Decisions" },
+  { id: "s17", num: 17, title: "Third-Party Links" },
+  { id: "s18", num: 18, title: "Marketing" },
+  { id: "s19", num: 19, title: "Policy Changes" },
+  { id: "s20", num: 20, title: "Contact Us" },
+  { id: "s21", num: 21, title: "Complaints" },
+];
+&nbsp;
+function <span class="fstat-no" title="function not covered" >SectionHeading(</span>{ num, title }) {
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    &lt;div className="mb-4 flex items-center gap-3 border-l-4 border-leather pl-4"&gt;
+      &lt;span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-leather text-xs font-bold text-cream"&gt;
+        {num}
+      &lt;/span&gt;
+      &lt;h2 className="text-xl font-semibold text-ink"&gt;{title}&lt;/h2&gt;
+    &lt;/div&gt;
+  );
+}
+&nbsp;
+function <span class="fstat-no" title="function not covered" >SubHeading(</span>{ children }) {
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    &lt;h3 className="mb-2 mt-5 flex items-center gap-2 text-base font-semibold text-leather"&gt;
+      &lt;span className="h-1.5 w-1.5 shrink-0 rounded-full bg-gold" /&gt;
+      {children}
+    &lt;/h3&gt;
+  );
+}
+&nbsp;
+function <span class="fstat-no" title="function not covered" >BulletList(</span>{ items }) {
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    &lt;ul className="space-y-1.5"&gt;
+      {items.map(<span class="fstat-no" title="function not covered" >(i</span>tem, i) =&gt; (
+<span class="cstat-no" title="statement not covered" >        &lt;li key={i} className="flex items-start gap-2 text-neutral-800"&gt;</span>
+          &lt;span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-leather/60" /&gt;
+          &lt;span&gt;{item}&lt;/span&gt;
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+&nbsp;
+function <span class="fstat-no" title="function not covered" >Callout(</span>{ children }) {
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    &lt;div className="my-4 rounded-r-xl border-l-4 border-gold bg-gold/10 px-5 py-4 text-sm text-neutral-800"&gt;
+      {children}
+    &lt;/div&gt;
+  );
+}
+&nbsp;
+export default function <span class="fstat-no" title="function not covered" >PrivacyPolicy(</span>) {
+  const [scrollProgress, setScrollProgress] = <span class="cstat-no" title="statement not covered" >useState(0);</span>
+  const [activeId, setActiveId] = <span class="cstat-no" title="statement not covered" >useState("s1");</span>
+  const [showTop, setShowTop] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+  const [tocOpen, setTocOpen] = <span class="cstat-no" title="statement not covered" >useState(false);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+    const onScroll = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+      const total = <span class="cstat-no" title="statement not covered" >document.documentElement.scrollHeight - window.innerHeight;</span>
+<span class="cstat-no" title="statement not covered" >      setScrollProgress(total &gt; 0 ? (window.scrollY / total) * 100 : 0);</span>
+<span class="cstat-no" title="statement not covered" >      setShowTop(window.scrollY &gt; 500);</span>
+      const sections = <span class="cstat-no" title="statement not covered" >document.querySelectorAll("section[id]");</span>
+      let current = <span class="cstat-no" title="statement not covered" >"s1";</span>
+<span class="cstat-no" title="statement not covered" >      sections.forEach(<span class="fstat-no" title="function not covered" >(e</span>l) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        if (el.getBoundingClientRect().top &lt;= 120) <span class="cstat-no" title="statement not covered" >current = el.id;</span></span>
+      });
+<span class="cstat-no" title="statement not covered" >      setActiveId(current);</span>
+    };
+<span class="cstat-no" title="statement not covered" >    window.addEventListener("scroll", onScroll, { passive: true });</span>
+<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >window.removeEventListener("scroll", onScroll);</span></span>
+  }, []);
+&nbsp;
+  const scrollTo = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(i</span>d) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });</span>
+<span class="cstat-no" title="statement not covered" >    setTocOpen(false);</span>
+  };
+&nbsp;
+<span class="cstat-no" title="statement not covered" >  return (</span>
+    &lt;div className="min-h-screen bg-gradient-to-br from-espresso via-leather to-espresso"&gt;
+      {/* Reading progress bar */}
+      &lt;div className="fixed left-0 top-0 z-50 h-0.5 w-full bg-white/10"&gt;
+        &lt;div
+          className="h-full bg-gradient-to-r from-gold via-cream to-gold transition-all duration-100"
+          style={{ width: `${scrollProgress}%` }}
+        /&gt;
+      &lt;/div&gt;
+&nbsp;
+      {/* Header */}
+      &lt;header className="sticky top-0.5 z-40 border-b border-white/10 bg-espresso/80 backdrop-blur-sm"&gt;
+        &lt;div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8"&gt;
+          &lt;img src="/leddar-logo.svg" alt="Leddar" className="h-10 w-auto" /&gt;
+          &lt;div className="flex items-center gap-4"&gt;
+            &lt;span className="hidden text-xs text-white/50 sm:inline"&gt;Premium Leather Manufacturing&lt;/span&gt;
+            &lt;button
+              className="flex items-center gap-1.5 rounded-lg border border-white/15 px-3 py-1.5 text-xs font-medium text-white/70 hover:bg-white/10 lg:hidden"
+              onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >setTocOpen(!tocOpen)}</span>
+            &gt;
+              {tocOpen ? &lt;X className="h-3.5 w-3.5" /&gt; : &lt;Menu className="h-3.5 w-3.5" /&gt;}
+              Contents
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+&nbsp;
+        {tocOpen &amp;&amp; (
+          &lt;div className="border-t border-white/10 bg-espresso/95 px-4 py-4 lg:hidden"&gt;
+            &lt;div className="grid grid-cols-2 gap-1"&gt;
+              {TOC.map(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; (
+<span class="cstat-no" title="statement not covered" >                &lt;button</span>
+                  key={item.id}
+                  onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >scrollTo(item.id)}</span>
+                  className={`flex items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs transition-colors ${
+                    activeId === item.id ? "bg-leather/30 text-gold font-medium" : "text-white/60 hover:bg-white/10"
+                  }`}
+                &gt;
+                  &lt;span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
+                    activeId === item.id ? "bg-gold text-espresso" : "bg-white/10 text-white/50"
+                  }`}&gt;
+                    {item.num}
+                  &lt;/span&gt;
+                  {item.title}
+                &lt;/button&gt;
+              ))}
+            &lt;/div&gt;
+          &lt;/div&gt;
+        )}
+      &lt;/header&gt;
+&nbsp;
+      &lt;div className="mx-auto w-full max-w-7xl px-4 pt-10 pb-20 sm:px-6 lg:px-8"&gt;
+        &lt;div className="flex gap-8 lg:gap-12"&gt;
+&nbsp;
+          {/* Sidebar TOC */}
+          &lt;aside className="hidden w-56 shrink-0 lg:block"&gt;
+            &lt;div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm"&gt;
+              &lt;p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-white/30"&gt;Contents&lt;/p&gt;
+              &lt;nav className="space-y-0.5"&gt;
+                {TOC.map(<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; (
+<span class="cstat-no" title="statement not covered" >                  &lt;button</span>
+                    key={item.id}
+                    onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >scrollTo(item.id)}</span>
+                    className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs transition-colors ${
+                      activeId === item.id ? "bg-leather/30 text-gold font-semibold" : "text-white/50 hover:bg-white/10"
+                    }`}
+                  &gt;
+                    &lt;span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold transition-colors ${
+                      activeId === item.id ? "bg-gold text-espresso" : "bg-white/10 text-white/40"
+                    }`}&gt;
+                      {item.num}
+                    &lt;/span&gt;
+                    {item.title}
+                  &lt;/button&gt;
+                ))}
+              &lt;/nav&gt;
+            &lt;/div&gt;
+          &lt;/aside&gt;
+&nbsp;
+          {/* Main content */}
+          &lt;main className="min-w-0 flex-1"&gt;
+            &lt;Link href="/signup" className="mb-6 inline-flex items-center gap-1.5 text-sm text-gold/80 hover:text-gold transition-colors"&gt;
+              &lt;ChevronLeft className="h-4 w-4" /&gt;
+              Back to Signup
+            &lt;/Link&gt;
+&nbsp;
+            {/* Hero card */}
+            &lt;div className="mb-8 rounded-3xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm"&gt;
+              &lt;div className="rounded-2xl border border-surface-500 bg-cream px-8 py-8 shadow-card"&gt;
+                &lt;div className="mb-4 inline-flex items-center gap-2 rounded-full bg-leather/10 px-3 py-1 text-xs font-semibold text-leather"&gt;
+                  &lt;span className="h-1.5 w-1.5 rounded-full bg-leather" /&gt;
+                  Legal Document
+                &lt;/div&gt;
+                &lt;h1 className="mb-4 text-4xl font-bold text-ink"&gt;Privacy Policy&lt;/h1&gt;
+                &lt;div className="flex flex-wrap gap-3"&gt;
+                  {[["Effective", "May 1, 2026"], ["Version", "v1.0.0.0"], ["Platform", "LEDDAR"], ["Operator", "Leddar Systems Limited"]].map(<span class="fstat-no" title="function not covered" >([</span>label, value]) =&gt; (
+<span class="cstat-no" title="statement not covered" >                    &lt;div key={label} className="rounded-lg border border-surface-400 bg-surface-100 px-3 py-1.5"&gt;</span>
+                      &lt;span className="text-[10px] font-bold uppercase tracking-wide text-neutral-600"&gt;{label}&lt;/span&gt;
+                      &lt;p className="text-xs font-medium text-ink"&gt;{value}&lt;/p&gt;
+                    &lt;/div&gt;
+                  ))}
+                  &lt;div className="rounded-lg border border-surface-400 bg-surface-100 px-3 py-1.5"&gt;
+                    &lt;span className="text-[10px] font-bold uppercase tracking-wide text-neutral-600"&gt;Website&lt;/span&gt;
+                    &lt;p className="text-xs font-medium"&gt;
+                      &lt;a href="https://www.myleddar.com" className="text-leather underline hover:text-espresso"&gt;www.myleddar.com&lt;/a&gt;
+                    &lt;/p&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+&nbsp;
+            {/* Sections */}
+            &lt;div className="space-y-4"&gt;
+&nbsp;
+              {[
+                {
+                  id: "s1", num: 1, title: "Introduction",
+                  content: (
+                    &lt;&gt;
+                      &lt;p className="mb-3 text-neutral-800"&gt;LEDDAR respects your privacy and is committed to protecting your personal data. This Privacy Policy explains how LEDDAR collects, uses, stores, shares, and protects personal data when you:&lt;/p&gt;
+                      &lt;BulletList items={["visit our website", "create an account", "apply as a Brand or Artisan", "complete verification", "submit a production request", "request a sample", "make or receive payments", "communicate through the platform", "contact support", "otherwise use LEDDAR's services"]} /&gt;
+                      &lt;p className="mt-3 text-neutral-800"&gt;This Privacy Policy should be read together with our{" "}&lt;Link href="/terms-and-conditions" className="text-leather underline hover:text-espresso"&gt;Terms &amp;amp; Conditions&lt;/Link&gt;{" "}and any related policies referenced on the platform.&lt;/p&gt;
+                    &lt;/&gt;
+                  )
+                },
+                {
+                  id: "s2", num: 2, title: "Who We Are",
+                  content: (
+                    &lt;&gt;
+                      &lt;p className="mb-3 text-neutral-800"&gt;LEDDAR is a technology platform that connects Brands and Artisans through structured workflows for samples, production requests, production tracking, quality control, and selected payment-related flows.&lt;/p&gt;
+                      &lt;p className="mb-3 text-neutral-800"&gt;For the purposes of applicable data protection law, LEDDAR may act as a data controller in relation to personal data collected for its own platform operations. The Nigeria Data Protection Act 2023 recognizes obligations for both data controllers and data processors.&lt;/p&gt;
+                    &lt;/&gt;
+                  )
+                },
+                {
+                  id: "s3", num: 3, title: "Scope of This Policy",
+                  content: (
+                    &lt;&gt;
+                      &lt;p className="mb-3 text-neutral-800"&gt;This Privacy Policy applies to:&lt;/p&gt;
+                      &lt;BulletList items={["Brands", "Artisans", "website visitors", "business contacts", "support users", "anyone whose personal data is processed by LEDDAR in connection with the platform"]} /&gt;
+                      &lt;p className="mt-3 text-neutral-800"&gt;It does not apply to third-party websites, services, or payment pages linked from or integrated into the platform. Those providers may have their own privacy policies.&lt;/p&gt;
+                    &lt;/&gt;
+                  )
+                },
+              ].map(<span class="fstat-no" title="function not covered" >({</span> id, num, title, content }) =&gt; (
+<span class="cstat-no" title="statement not covered" >                &lt;div key={id} className="rounded-3xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm"&gt;</span>
+                  &lt;div className="rounded-2xl border border-surface-500 bg-cream px-8 py-7 shadow-card"&gt;
+                    &lt;section id={id} className="scroll-mt-24"&gt;
+                      &lt;SectionHeading num={num} title={title} /&gt;
+                      {content}
+                    &lt;/section&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              ))}
+&nbsp;
+              &lt;div className="rounded-3xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm"&gt;
+                &lt;div className="rounded-2xl border border-surface-500 bg-cream px-8 py-7 shadow-card"&gt;
+                  &lt;section id="s4" className="scroll-mt-24"&gt;
+                    &lt;SectionHeading num={4} title="The Personal Data We Collect" /&gt;
+                    &lt;p className="mb-4 text-neutral-800"&gt;Depending on how you use LEDDAR, we may collect the following categories of personal data.&lt;/p&gt;
+                    &lt;SubHeading&gt;4.1 Identity Data&lt;/SubHeading&gt;
+                    &lt;BulletList items={["full name", "date of birth, where required", "gender, where required", "government-issued identification details, where required", "photograph or selfie, where required for verification"]} /&gt;
+                    &lt;SubHeading&gt;4.2 Contact Data&lt;/SubHeading&gt;
+                    &lt;BulletList items={["email address", "phone number", "WhatsApp number", "business address", "delivery address", "billing address"]} /&gt;
+                    &lt;SubHeading&gt;4.3 Business and Profile Data&lt;/SubHeading&gt;
+                    &lt;BulletList items={["business name", "brand or workshop name", "role or title", "category or specialization", "city, state, and country", "production capacity or service profile", "portfolio and uploaded work samples"]} /&gt;
+                    &lt;SubHeading&gt;4.4 Verification Data&lt;/SubHeading&gt;
+                    &lt;BulletList items={["KYC documents", "identity validation results", "bank account verification information", "compliance-related information", "fraud screening results"]} /&gt;
+                    &lt;SubHeading&gt;4.5 Transaction and Order Data&lt;/SubHeading&gt;
+                    &lt;BulletList items={["quote requests and production requests", "product specifications, quantity, and timeline details", "invoice, payment, and payout records", "refund or cancellation records", "support history related to orders"]} /&gt;
+                    &lt;SubHeading&gt;4.6 Communications Data&lt;/SubHeading&gt;
+                    &lt;BulletList items={["messages sent through the platform", "emails to support", "WhatsApp or SMS messages sent through LEDDAR channels", "call notes where support interactions are recorded internally"]} /&gt;
+                    &lt;SubHeading&gt;4.7 Technical and Usage Data&lt;/SubHeading&gt;
+                    &lt;BulletList items={["IP address, browser type, device type, operating system", "pages visited, date and time of access, referring links", "actions taken on the platform", "cookie and analytics data"]} /&gt;
+                    &lt;SubHeading&gt;4.8 Sensitive Personal Data&lt;/SubHeading&gt;
+                    &lt;Callout&gt;
+                      Where necessary and lawful, we may process sensitive personal data such as government ID data and certain biometric-style verification inputs used by identity verification providers. Nigeria&amp;apos;s Data Protection Act 2023 specifically addresses sensitive personal data and imposes additional obligations around such processing.
+                    &lt;/Callout&gt;
+                  &lt;/section&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+&nbsp;
+              &lt;div className="rounded-3xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm"&gt;
+                &lt;div className="rounded-2xl border border-surface-500 bg-cream px-8 py-7 shadow-card"&gt;
+                  &lt;section id="s5" className="scroll-mt-24"&gt;
+                    &lt;SectionHeading num={5} title="How We Collect Personal Data" /&gt;
+                    &lt;SubHeading&gt;5.1 Directly from You&lt;/SubHeading&gt;
+                    &lt;p className="mb-2 text-neutral-800"&gt;When you create an account, complete forms, request pricing, request a sample, submit a production request, upload documents, or contact us.&lt;/p&gt;
+                    &lt;SubHeading&gt;5.2 Automatically&lt;/SubHeading&gt;
+                    &lt;p className="mb-2 text-neutral-800"&gt;When you use the platform, we may collect technical and usage data through cookies, logs, analytics tools, and related technologies.&lt;/p&gt;
+                    &lt;SubHeading&gt;5.3 From Third Parties&lt;/SubHeading&gt;
+                    &lt;p className="text-neutral-800"&gt;We may receive information from payment providers, verification providers, analytics providers, fraud prevention tools, customer support tools, and publicly available business sources where lawful.&lt;/p&gt;
+                  &lt;/section&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+&nbsp;
+              &lt;div className="rounded-3xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm"&gt;
+                &lt;div className="rounded-2xl border border-surface-500 bg-cream px-8 py-7 shadow-card"&gt;
+                  &lt;section id="s6" className="scroll-mt-24"&gt;
+                    &lt;SectionHeading num={6} title="Why We Process Your Personal Data" /&gt;
+                    &lt;p className="mb-4 text-neutral-800"&gt;We process personal data only where we have a lawful basis and a legitimate operational reason to do so.&lt;/p&gt;
+                    &lt;SubHeading&gt;6.1 Provide Platform Services&lt;/SubHeading&gt;
+                    &lt;p className="mb-3 text-neutral-800"&gt;Create and manage accounts, onboard users, enable workflows, manage dashboards, records, and support interactions.&lt;/p&gt;
+                    &lt;SubHeading&gt;6.2 Verify Users and Prevent Fraud&lt;/SubHeading&gt;
+                    &lt;p className="mb-3 text-neutral-800"&gt;Complete KYC checks, validate identity or business details, screen for fraud and abuse, enforce platform trust and safety rules.&lt;/p&gt;
+                    &lt;SubHeading&gt;6.3 Process Payments and Payouts&lt;/SubHeading&gt;
+                    &lt;p className="mb-3 text-neutral-800"&gt;Support billing records, confirm payment status, support artisan payout workflows, handle refunds, reversals, and reconciliation.&lt;/p&gt;
+                    &lt;SubHeading&gt;6.4 Support Operations and Customer Care&lt;/SubHeading&gt;
+                    &lt;p className="mb-3 text-neutral-800"&gt;Respond to user requests, resolve complaints, investigate incidents, and improve user experience.&lt;/p&gt;
+                    &lt;SubHeading&gt;6.5 Improve the Platform&lt;/SubHeading&gt;
+                    &lt;p className="mb-3 text-neutral-800"&gt;Analyze usage, measure performance, fix bugs, improve features, and understand demand and supply behavior.&lt;/p&gt;
+                    &lt;SubHeading&gt;6.6 Marketing and Communications&lt;/SubHeading&gt;
+                    &lt;p className="mb-3 text-neutral-800"&gt;Where permitted by law, we may send product updates, onboarding reminders, transaction notices, service messages, and marketing communications. You may opt out of non-essential marketing at any time.&lt;/p&gt;
+                    &lt;SubHeading&gt;6.7 Legal and Compliance Purposes&lt;/SubHeading&gt;
+                    &lt;p className="text-neutral-800"&gt;Comply with legal obligations, respond to lawful requests, enforce our contracts, investigate fraud or misuse, and protect our rights, users, and platform.&lt;/p&gt;
+                  &lt;/section&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+&nbsp;
+              &lt;div className="rounded-3xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm"&gt;
+                &lt;div className="rounded-2xl border border-surface-500 bg-cream px-8 py-7 shadow-card"&gt;
+                  &lt;section id="s7" className="scroll-mt-24"&gt;
+                    &lt;SectionHeading num={7} title="Lawful Bases for Processing" /&gt;
+                    &lt;p className="mb-3 text-neutral-800"&gt;Depending on the context, our lawful basis may include:&lt;/p&gt;
+                    &lt;div className="space-y-2.5"&gt;
+                      {[
+                        ["Contract", "where processing is necessary to provide the platform, manage requests, process production workflows, or administer accounts"],
+                        ["Consent", "where consent is required, such as some marketing communications or certain optional features"],
+                        ["Legal Obligation", "where we must comply with law, lawful requests, or regulatory obligations"],
+                        ["Legitimate Interests", "where necessary for platform security, fraud prevention, support, analytics, or service improvement, provided such interests do not override your rights"],
+                        ["Protection of Vital or Public Interests", "where applicable under law"],
+                      ].map(<span class="fstat-no" title="function not covered" >([</span>label, desc]) =&gt; (
+<span class="cstat-no" title="statement not covered" >                        &lt;div key={label} className="flex gap-3 rounded-xl bg-surface-100 p-3"&gt;</span>
+                          &lt;span className="mt-0.5 shrink-0 font-semibold text-leather text-sm"&gt;{label}:&lt;/span&gt;
+                          &lt;span className="text-sm text-neutral-800"&gt;{desc}&lt;/span&gt;
+                        &lt;/div&gt;
+                      ))}
+                    &lt;/div&gt;
+                  &lt;/section&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+&nbsp;
+              {[
+                {
+                  id: "s8", num: 8, title: "Cookies and Similar Technologies",
+                  content: &lt;&gt;&lt;p className="mb-2 text-neutral-800"&gt;We may use cookies, session technologies, analytics tools, and similar technologies to keep you logged in, remember preferences, improve performance, understand platform interactions, and support security and fraud monitoring.&lt;/p&gt;&lt;p className="text-neutral-800"&gt;You can manage cookies through your browser settings or any cookie controls we make available.&lt;/p&gt;&lt;/&gt;
+                },
+                {
+                  id: "s10", num: 10, title: "International and Cross-Border Transfers",
+                  content: &lt;p className="text-neutral-800"&gt;Your data may be stored or processed outside Nigeria where our service providers or infrastructure require it. Where we transfer personal data outside Nigeria, we will take reasonable steps to ensure that an appropriate legal basis and reasonable safeguards are in place.&lt;/p&gt;
+                },
+                {
+                  id: "s11", num: 11, title: "Data Security",
+                  content: &lt;&gt;&lt;p className="mb-2 text-neutral-800"&gt;We use reasonable technical, administrative, and organizational measures to protect personal data, including access controls, password protection, encrypted transmission where appropriate, role-based permissions, vendor controls, and logging and monitoring.&lt;/p&gt;&lt;p className="text-neutral-800"&gt;No system is completely secure, and we cannot guarantee absolute security.&lt;/p&gt;&lt;/&gt;
+                },
+                {
+                  id: "s15", num: 15, title: "Children",
+                  content: &lt;p className="text-neutral-800"&gt;LEDDAR is intended for adults and business users. We do not knowingly offer the platform to children or intentionally collect children&amp;apos;s personal data. If you believe a child has provided personal data to LEDDAR improperly, contact us so we can take appropriate action.&lt;/p&gt;
+                },
+                {
+                  id: "s16", num: 16, title: "Automated Decision-Making",
+                  content: &lt;p className="text-neutral-800"&gt;LEDDAR may use rule-based systems or automated checks for risk screening, onboarding prioritization, fraud detection, verification routing, or service optimization. Where applicable, such processing will be conducted in line with applicable law.&lt;/p&gt;
+                },
+                {
+                  id: "s17", num: 17, title: "Third-Party Links and Services",
+                  content: &lt;p className="text-neutral-800"&gt;Our platform may contain links to third-party services or use third-party tools. We are not responsible for the privacy practices of third parties. You should review their privacy policies separately.&lt;/p&gt;
+                },
+                {
+                  id: "s18", num: 18, title: "Marketing Communications",
+                  content: &lt;p className="text-neutral-800"&gt;We may send service-related communications necessary for account and platform operation. Where we send optional marketing communications, you may unsubscribe using the available link or by contacting us.&lt;/p&gt;
+                },
+                {
+                  id: "s19", num: 19, title: "Changes to This Policy",
+                  content: &lt;p className="text-neutral-800"&gt;We may update this Privacy Policy from time to time. Where changes are material, we may notify users through the website, dashboard, or email. The &amp;quot;Effective Date&amp;quot; above shows when this version took effect.&lt;/p&gt;
+                },
+                {
+                  id: "s21", num: 21, title: "Complaints",
+                  content: &lt;p className="text-neutral-800"&gt;If you believe your data rights have been violated, you may contact LEDDAR first so we can attempt to resolve the issue. You may also have the right to complain to the Nigeria Data Protection Commission, which is the data protection authority established under the NDPA.&lt;/p&gt;
+                },
+              ].filter(<span class="fstat-no" title="function not covered" >s </span>=&gt; <span class="cstat-no" title="statement not covered" >!["s9", "s12", "s13", "s14"].includes(s.id))</span>.map(<span class="fstat-no" title="function not covered" >({</span> id, num, title, content }) =&gt; (
+<span class="cstat-no" title="statement not covered" >                &lt;div key={id} className="rounded-3xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm"&gt;</span>
+                  &lt;div className="rounded-2xl border border-surface-500 bg-cream px-8 py-7 shadow-card"&gt;
+                    &lt;section id={id} className="scroll-mt-24"&gt;
+                      &lt;SectionHeading num={num} title={title} /&gt;
+                      {content}
+                    &lt;/section&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              ))}
+&nbsp;
+              &lt;div className="rounded-3xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm"&gt;
+                &lt;div className="rounded-2xl border border-surface-500 bg-cream px-8 py-7 shadow-card"&gt;
+                  &lt;section id="s9" className="scroll-mt-24"&gt;
+                    &lt;SectionHeading num={9} title="When We Share Personal Data" /&gt;
+                    &lt;Callout&gt;We do not sell personal data. We may share personal data only where necessary and lawful.&lt;/Callout&gt;
+                    &lt;SubHeading&gt;9.1 With Service Providers&lt;/SubHeading&gt;
+                    &lt;p className="mb-2 text-neutral-800"&gt;We may share data with vendors supporting cloud hosting, analytics, messaging, email delivery, KYC and identity verification, payment processing, fraud prevention, customer support, and document storage. These providers process data on our behalf under contractual controls.&lt;/p&gt;
+                    &lt;SubHeading&gt;9.2 Between Platform Users&lt;/SubHeading&gt;
+                    &lt;p className="mb-2 text-neutral-800"&gt;We may share limited information between Brands and Artisans where necessary to perform a transaction or production workflow, limited to what is reasonably needed.&lt;/p&gt;
+                    &lt;SubHeading&gt;9.3 With Regulators, Authorities, or Courts&lt;/SubHeading&gt;
+                    &lt;p className="mb-2 text-neutral-800"&gt;We may disclose personal data where required by law, lawful process, or to protect legal rights.&lt;/p&gt;
+                    &lt;SubHeading&gt;9.4 In a Corporate Transaction&lt;/SubHeading&gt;
+                    &lt;p className="text-neutral-800"&gt;If LEDDAR is involved in a merger, acquisition, or sale of assets, personal data may be disclosed as part of that process, subject to appropriate safeguards.&lt;/p&gt;
+                  &lt;/section&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+&nbsp;
+              &lt;div className="rounded-3xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm"&gt;
+                &lt;div className="rounded-2xl border border-surface-500 bg-cream px-8 py-7 shadow-card"&gt;
+                  &lt;section id="s12" className="scroll-mt-24"&gt;
+                    &lt;SectionHeading num={12} title="Personal Data Breaches" /&gt;
+                    &lt;p className="mb-3 text-neutral-800"&gt;If a personal data breach occurs, LEDDAR will assess the incident and respond as required by applicable law. Where required, we may:&lt;/p&gt;
+                    &lt;BulletList items={["contain and investigate the breach", "notify affected parties", "notify the appropriate authority", "take remedial action"]} /&gt;
+                  &lt;/section&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+&nbsp;
+              &lt;div className="rounded-3xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm"&gt;
+                &lt;div className="rounded-2xl border border-surface-500 bg-cream px-8 py-7 shadow-card"&gt;
+                  &lt;section id="s13" className="scroll-mt-24"&gt;
+                    &lt;SectionHeading num={13} title="Data Retention" /&gt;
+                    &lt;p className="mb-2 text-neutral-800"&gt;We keep personal data only for as long as reasonably necessary for account administration, production and transaction records, compliance and audit requirements, dispute handling, fraud prevention, and legal defense.&lt;/p&gt;
+                    &lt;p className="text-neutral-800"&gt;We may retain some information after account closure for tax and accounting records, payment reconciliation, legal claims or defense, fraud prevention, and regulatory compliance.&lt;/p&gt;
+                  &lt;/section&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+&nbsp;
+              &lt;div className="rounded-3xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm"&gt;
+                &lt;div className="rounded-2xl border border-surface-500 bg-cream px-8 py-7 shadow-card"&gt;
+                  &lt;section id="s14" className="scroll-mt-24"&gt;
+                    &lt;SectionHeading num={14} title="Your Rights" /&gt;
+                    &lt;Callout&gt;
+                      Under the NDPA, you may have rights including the right to be informed, access, rectification, objection, restriction, portability, erasure, and not to be subject to certain automated decision-making.
+                    &lt;/Callout&gt;
+                    &lt;p className="mb-3 text-neutral-800"&gt;Subject to law and verification of your identity, you may request to:&lt;/p&gt;
+                    &lt;BulletList items={["access your personal data", "correct inaccurate or incomplete data", "withdraw consent where consent is the basis", "object to certain processing", "restrict certain processing", "request deletion where applicable", "request portability where applicable", "complain to the appropriate authority"]} /&gt;
+                    &lt;p className="mt-3 text-neutral-800"&gt;To exercise your rights, contact us using the details below.&lt;/p&gt;
+                  &lt;/section&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+&nbsp;
+              {/* Contact */}
+              &lt;div id="s20" className="scroll-mt-24 rounded-3xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm"&gt;
+                &lt;div className="rounded-2xl border border-surface-500 bg-cream px-8 py-7 shadow-card"&gt;
+                  &lt;SectionHeading num={20} title="Contact Us" /&gt;
+                  &lt;p className="mb-5 text-neutral-800"&gt;For privacy questions, complaints, or data rights requests, contact:&lt;/p&gt;
+                  &lt;div className="rounded-xl border border-surface-400 bg-surface-100 p-5"&gt;
+                    &lt;p className="mb-3 font-semibold text-ink"&gt;LEDDAR — Leddar Systems Limited&lt;/p&gt;
+                    &lt;div className="space-y-2 text-sm text-neutral-800"&gt;
+                      {[
+                        ["www.myleddar.com", "https://www.myleddar.com"],
+                        ["345 Odusami Street, Ogba, Lagos", null],
+                        ["Alfred.j@myleddar.com", "mailto:Alfred.j@myleddar.com"],
+                        ["Support@myleddar.com", "mailto:Support@myleddar.com"],
+                        ["+2349067688122", "tel:+2349067688122"],
+                      ].map(<span class="fstat-no" title="function not covered" >([</span>text, href]) =&gt; (
+<span class="cstat-no" title="statement not covered" >                        &lt;div key={text} className="flex items-center gap-2"&gt;</span>
+                          &lt;span className="h-1.5 w-1.5 rounded-full bg-leather/60 shrink-0" /&gt;
+                          {href ? &lt;a href={href} className="text-leather underline hover:text-espresso"&gt;{text}&lt;/a&gt; : &lt;span&gt;{text}&lt;/span&gt;}
+                        &lt;/div&gt;
+                      ))}
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+&nbsp;
+              {/* Footer nav */}
+              &lt;div className="rounded-3xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm"&gt;
+                &lt;div className="flex items-center justify-between rounded-2xl border border-surface-500 bg-cream px-6 py-4 shadow-card"&gt;
+                  &lt;Link href="/signup" className="flex items-center gap-1.5 text-sm text-leather hover:text-espresso transition-colors"&gt;
+                    &lt;ChevronLeft className="h-4 w-4" /&gt;
+                    Back to Signup
+                  &lt;/Link&gt;
+                  &lt;Link href="/terms-and-conditions" className="text-sm text-leather underline hover:text-espresso transition-colors"&gt;
+                    View Terms &amp;amp; Conditions →
+                  &lt;/Link&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+&nbsp;
+            &lt;/div&gt;
+          &lt;/main&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+&nbsp;
+      {showTop &amp;&amp; (
+        &lt;button
+          onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >window.scrollTo({ top: 0, behavior: "smooth" })}</span>
+          className="fixed bottom-8 right-8 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-gold text-espresso shadow-lg hover:bg-gold/80 transition-colors"
+          aria-label="Scroll to top"
+        &gt;
+          &lt;ArrowUp className="h-4 w-4" /&gt;
+        &lt;/button&gt;
+      )}
+    &lt;/div&gt;
+  );
+}
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-06-26T23:13:19.993Z
+            </div>
+        <script src="../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../sorter.js"></script>
+        <script src="../../block-navigation.js"></script>
+    </body>
+</html>
+    

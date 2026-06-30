@@ -21,3 +21,14 @@
 		@apply rounded-2xl border border-surface-400/70 bg-white/80 backdrop-blur-sm shadow-card;
 	}
 }
+
+/* Override browser autofill blue with warm brown tint */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+	-webkit-box-shadow: 0 0 0 1000px #FDF5EE inset !important;
+	-webkit-text-fill-color: #3C2F2A !important;
+	border-color: #6B3A2A !important;
+	transition: background-color 9999s ease-in-out 0s;
+}
