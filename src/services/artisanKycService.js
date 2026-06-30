@@ -48,7 +48,8 @@ export async function getArtisanKycStatus() {
       VERIFIED:    "verified",
       FAILED:      "failed",
       NOT_STARTED: "not_started",
-      PENDING:     "pending_review",
+      PENDING:     "saved",        // address entered, awaiting first job
+      IN_PROGRESS: "qoreid_pending", // QoreID check triggered
     };
 
     const profile = {

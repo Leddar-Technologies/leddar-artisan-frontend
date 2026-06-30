@@ -5,8 +5,9 @@ import apiClient from "../../services/apiClient";
 function normalizeJob(job) {
   return {
     ...job,
-    status:  job.status?.toLowerCase(),
-    jobType: job.type?.toLowerCase() || "sample",
+    status:           job.status?.toLowerCase(),
+    jobType:          job.type?.toLowerCase() || "sample",
+    adminVideoStatus: job.adminVideoStatus?.toLowerCase() || null,
   };
 }
 

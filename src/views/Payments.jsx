@@ -38,6 +38,7 @@ function formatNaira(n) {
 
 export default function Payments() {
   const [payments, setPayments]           = useState([]);
+  const [pendingEscrow, setPendingEscrow] = useState(0);
   const [loading, setLoading]             = useState(true);
   const [error, setError]                 = useState("");
   const [downloadingId, setDownloadingId] = useState(null);
@@ -48,6 +49,7 @@ export default function Payments() {
     try {
       const res = await apiClient.get("/artisans/payments");
       setPayments(res.data.data || []);
+      setPendingEscrow(res.data.pendingEscrow || 0);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to load payments.");
     } finally {
@@ -64,7 +66,7 @@ export default function Payments() {
       const url = URL.createObjectURL(res.data);
       const a   = document.createElement("a");
       a.href     = url;
-      a.download = ref ? `${ref}.pdf` : `PAY-${paymentId.slice(0, 8).toUpperCase()}.pdf`;
+      a.download = `leddar-${ref}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
     } catch (err) {
@@ -81,9 +83,7 @@ export default function Payments() {
     .filter((p) => p.status === "RELEASED" || p.status === "RECEIVED")
     .reduce((sum, p) => sum + p.amount, 0);
 
-  const totalPending  = payments
-    .filter((p) => p.status === "PENDING" || p.status === "HELD_IN_ESCROW")
-    .reduce((sum, p) => sum + p.amount, 0);
+  // pendingEscrow comes from the API — sum of order.escrowBalance for this artisan's active orders
 
   const sampleTotal   = payments
     .filter((p) => (p.status === "RELEASED" || p.status === "RECEIVED") && p.order?.type === "SAMPLE")
@@ -115,9 +115,8 @@ export default function Payments() {
 
       {/* Stat cards */}
       <div className="grid gap-4 md:grid-cols-2">
-        <StatCard title="Total Earned"      value={formatNaira(totalEarned)}     icon={Wallet}  iconColor="text-success" />
-        <StatCard title="Pending / Escrow"  value={formatNaira(totalPending)}    icon={Clock}   iconColor="text-gold" />
-        <StatCard title="Sample Earnings"   value={formatNaira(sampleTotal)}     icon={Coins}   iconColor="text-leather" />
+        <StatCard title="Total Earned"        value={formatNaira(totalEarned)}     icon={Wallet}  iconColor="text-success" />
+        <StatCard title="Sample Earnings"     value={formatNaira(sampleTotal)}     icon={Coins}   iconColor="text-leather" />
         <StatCard title="Production Earnings" value={formatNaira(productionTotal)} icon={Banknote} iconColor="text-success" />
       </div>
 
@@ -159,8 +158,11 @@ export default function Payments() {
                       <td className="px-4 py-3 text-neutral-600 whitespace-nowrap">
                         {new Date(p.createdAt).toLocaleDateString("en-NG")}
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs font-bold text-leather whitespace-nowrap">
-                        {p.order?.ref || (p.orderId ? `#${p.orderId.slice(0, 8).toUpperCase()}` : "—")}
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <p className="font-mono text-xs font-bold text-leather">{p.order?.ref || (p.orderId ? `#${p.orderId.slice(0, 8).toUpperCase()}` : "—")}</p>
+                        {p.order?.quote?.ref && (
+                          <p className="font-mono text-[10px] text-[#A39289] mt-0.5">[{p.order.quote.ref}]</p>
+                        )}
                       </td>
                       <td className="px-4 py-3">
                         {p.order?.type ? (
@@ -183,7 +185,7 @@ export default function Payments() {
                       <td className="px-4 py-3">
                         {(p.status === "RELEASED" || p.status === "RECEIVED") ? (
                           <button
-                            onClick={() => handleDownloadReceipt(p.id, p.ref || p.id)}
+                            onClick={() => handleDownloadReceipt(p.id, p.order?.ref || p.orderId?.slice(0, 8).toUpperCase() || p.id)}
                             disabled={downloadingId === p.id}
                             className="flex items-center gap-1 rounded-lg border border-[#E8DED5] bg-white px-2.5 py-1.5 text-[11px] font-medium text-leather hover:bg-[#FFF8EF] transition-colors whitespace-nowrap disabled:opacity-50"
                           >

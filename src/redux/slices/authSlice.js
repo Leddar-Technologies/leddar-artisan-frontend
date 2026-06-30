@@ -4,27 +4,12 @@ import axios from "axios";
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 
-const mapSpecialtyToEnum = (displayValue) => {
-  if (!displayValue) return "BAGS";
-  const val = displayValue.toLowerCase();
-  if (val.includes("footwear") || val.includes("shoes")) return "SHOES";
-  if (val.includes("bag")) return "BAGS";
-  if (val.includes("wallet")) return "WALLETS";
-  if (val.includes("belt")) return "BELTS";
-  if (val.includes("jacket")) return "JACKETS";
-  return "BAGS";
-};
-
 // --- THUNKS ---
 
 export const registerArtisan = createAsyncThunk(
   "auth/registerArtisan",
   async (formData, { rejectWithValue }) => {
     try {
-      const rawSpecialty = formData.get("specialty");
-      if (rawSpecialty) {
-        formData.set("specialty", mapSpecialtyToEnum(rawSpecialty));
-      }
       const response = await axios.post(
         `${API_URL}/auth/register/artisan`,
         formData,

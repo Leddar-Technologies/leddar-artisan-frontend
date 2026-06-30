@@ -9,6 +9,7 @@ import {
 } from "../components/ui/Card";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
+import PhoneInput from "../components/ui/PhoneInput";
 import Badge from "../components/ui/Badge";
 import {
   User, Building2, Save, Upload, Loader2, CheckCircle2, AlertCircle, ShieldCheck,
@@ -244,6 +245,14 @@ export default function Profile() {
                 value={profileData.fullName}
                 onChange={(e) => handleProfileChange("fullName", e.target.value)}
               />
+              <PhoneInput
+                label="WhatsApp Number"
+                value={profileData.whatsapp}
+                onChange={(e) => handleProfileChange("whatsapp", e.target.value)}
+                name="whatsapp"
+              />
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-stone-700 mb-1">Skill/Specialty</label>
                 <select
@@ -252,11 +261,17 @@ export default function Profile() {
                   className="w-full px-4 py-2 border border-stone-300 rounded-lg outline-none"
                 >
                   <option value="">Select specialty</option>
-                  <option value="Footwear - shoes and boots">Footwear — shoes and boots</option>
-                  <option value="Bags">Bags</option>
-                  <option value="Wallets, Belts">Wallets, Belts</option>
+                  <option value="SHOES_AND_BOOTS">Shoes &amp; Boots</option>
+                  <option value="SLIPPERS_AND_SANDALS">Slippers &amp; Sandals</option>
+                  <option value="WOMEN_BAGS">Women Bags</option>
+                  <option value="OFFICE_AND_TRAVEL_BAGS">Office &amp; Travel Bags</option>
+                  <option value="WALLETS_AND_BELTS">Wallets &amp; Belts</option>
+                  <option value="SMALL_LEATHER_GOODS">Small Leather Goods</option>
+                  <option value="LEATHER_WEARS">Leather Wears</option>
+                  <option value="OTHERS">Others</option>
                 </select>
               </div>
+            </div>
             </div>
 
             {/* Portfolio */}

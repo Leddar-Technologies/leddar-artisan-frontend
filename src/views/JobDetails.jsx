@@ -20,7 +20,7 @@ function formatNaira(n) {
 }
 
 const STAGE_LABEL = {
-  SAMPLE_FLAT_FEE: "Sample Fee (70%)",
+  SAMPLE_FLAT_FEE: "Sample Fee",
   MATERIAL:        "Raw Materials (Stage 1)",
   SERVICE:         "Service Fee (Stage 2)",
   FULL_PAYMENT:    "Full Payment",
@@ -144,7 +144,18 @@ function DeadlineCountdown({ deadline }) {
 }
 
 const SAMPLE_PIPELINE     = ["assigned", "in_progress", "video_uploaded", "sample_approved", "completed"];
-const PRODUCTION_PIPELINE = ["assigned", "in_progress", "pending_delivery", "dispatched", "delivered"];
+const PRODUCTION_PIPELINE = ["assigned", "in_progress", "video_uploaded", "pending_delivery", "dispatched", "delivered"];
+
+const STEP_LABEL = {
+  assigned:       "Assigned",
+  in_progress:    "In Progress",
+  video_uploaded: "Admin Review",
+  sample_approved:"Sample Approved",
+  pending_delivery:"Pending Delivery",
+  dispatched:     "Dispatched",
+  delivered:      "Delivered",
+  completed:      "Completed",
+};
 
 export default function JobDetails({ jobId, onBack }) {
   const dispatch = useDispatch();
@@ -157,6 +168,13 @@ export default function JobDetails({ jobId, onBack }) {
   const [videoError, setVideoError]         = useState("");
   const [kycProfile, setKycProfile]         = useState(null);
   const videoInputRef                       = useRef(null);
+
+  // Auto-dismiss video size error after 4 seconds
+  useEffect(() => {
+    if (!videoError) return;
+    const t = setTimeout(() => setVideoError(""), 4000);
+    return () => clearTimeout(t);
+  }, [videoError]);
 
   // All 3 steps must be complete before the artisan can accept
   const kycVerified = !!(
@@ -267,10 +285,10 @@ export default function JobDetails({ jobId, onBack }) {
         <ArrowLeft size={18} /> Back to jobs
       </Button>
 
-      {(actionError || videoError) && (
+      {actionError && (
         <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
           <AlertCircle className="h-4 w-4 flex-shrink-0" />
-          {actionError || videoError}
+          {actionError}
         </div>
       )}
 
@@ -299,20 +317,25 @@ export default function JobDetails({ jobId, onBack }) {
           <div className="px-6 pb-6 sm:px-8">
             <div className="mt-4 flex items-center gap-1 overflow-x-auto pb-1">
               {pipeline.map((step, i) => {
-                const done    = i < stepIdx || job.status === "completed";
-                const current = i === stepIdx && job.status !== "completed";
+                const done    = i < stepIdx || job.status === "completed" || job.status === "delivered";
+                const current = i === stepIdx;
+                // Blank out future steps when admin is reviewing (video_uploaded)
+                const adminReview = displayStatus === "video_uploaded";
+                const blanked = !done && !current;
                 return (
                   <div key={step} className="flex items-center gap-1 min-w-0">
                     <div className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold whitespace-nowrap ${
                       done    ? "bg-emerald-100 text-emerald-700"
-                      : current ? "bg-leather text-white"
-                      : "bg-surface-100 text-neutral-500"
+                      : current ? (adminReview ? "bg-amber-100 text-amber-700 border border-amber-300" : "bg-leather text-white")
+                      : "bg-surface-100 text-neutral-300"
                     }`}>
-                      {done ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Clock className="h-3.5 w-3.5" />}
-                      {step.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+                      {done    ? <CheckCircle2 className="h-3.5 w-3.5" />
+                      : current && adminReview ? <Clock className="h-3.5 w-3.5 animate-pulse" />
+                      : <Clock className="h-3.5 w-3.5" />}
+                      {STEP_LABEL[step] || step.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                     </div>
                     {i < pipeline.length - 1 && (
-                      <div className={`h-0.5 w-5 flex-shrink-0 ${i < stepIdx ? "bg-emerald-300" : "bg-surface-300"}`} />
+                      <div className={`h-0.5 w-5 flex-shrink-0 ${i < stepIdx ? "bg-emerald-300" : "bg-surface-200"}`} />
                     )}
                   </div>
                 );
@@ -350,15 +373,33 @@ export default function JobDetails({ jobId, onBack }) {
               {/* Reference files */}
               {job.order?.quote?.files?.length > 0 && (
                 <div>
-                  <p className="text-xs text-neutral-500 uppercase tracking-wide mb-2">Reference Files</p>
+                  <p className="text-xs text-neutral-500 uppercase tracking-wide mb-2">
+                    Reference Files ({job.order.quote.files.length})
+                  </p>
+                  {/* Image thumbnails */}
+                  {job.order.quote.files.some((f) => f.mimeType?.startsWith("image/")) && (
+                    <div className="grid grid-cols-3 gap-2 mb-2">
+                      {job.order.quote.files
+                        .filter((f) => f.mimeType?.startsWith("image/"))
+                        .map((f) => (
+                          <a key={f.id} href={f.url} target="_blank" rel="noreferrer"
+                            className="block aspect-square rounded-lg overflow-hidden border border-[#E8DED5] bg-[#FAF7F4] hover:opacity-80 transition-opacity">
+                            <img src={f.url} alt="Reference" className="h-full w-full object-cover" />
+                          </a>
+                        ))}
+                    </div>
+                  )}
+                  {/* PDF / video links */}
                   <div className="flex flex-wrap gap-2">
-                    {job.order.quote.files.map((f) => (
-                      <a key={f.id} href={f.url} target="_blank" rel="noreferrer"
-                        className="flex items-center gap-1.5 rounded-lg border border-[#E8DED5] bg-atmosphere px-3 py-1.5 text-xs font-medium text-ink hover:bg-[#F0E8DE]">
-                        <Package className="h-3.5 w-3.5" />
-                        {f.mimeType?.includes("pdf") ? "PDF Brief" : f.fileType === "video" ? "Video Ref" : "Image Ref"}
-                      </a>
-                    ))}
+                    {job.order.quote.files
+                      .filter((f) => !f.mimeType?.startsWith("image/"))
+                      .map((f) => (
+                        <a key={f.id} href={f.url} target="_blank" rel="noreferrer"
+                          className="flex items-center gap-1.5 rounded-lg border border-[#E8DED5] bg-atmosphere px-3 py-1.5 text-xs font-medium text-ink hover:bg-[#F0E8DE]">
+                          <Package className="h-3.5 w-3.5" />
+                          {f.mimeType?.includes("pdf") ? "PDF Brief" : "Video Ref"}
+                        </a>
+                      ))}
                   </div>
                 </div>
               )}
@@ -453,14 +494,45 @@ export default function JobDetails({ jobId, onBack }) {
                       : isSample ? "Sample Video" : "Production Completion Video"}
                   </p>
                   <input ref={videoInputRef} type="file" accept="video/*" className="hidden"
-                    onChange={(e) => { setVideoFile(e.target.files?.[0] || null); setVideoError(""); }} />
-                  <button type="button" onClick={() => videoInputRef.current?.click()}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] || null;
+                      if (file && file.size > 100 * 1024 * 1024) {
+                        setVideoError("Video must be 100 MB or less.");
+                        setVideoFile(null);
+                        e.target.value = "";
+                        return;
+                      }
+                      setVideoFile(file);
+                      setVideoError("");
+                    }} />
+                  <button type="button"
+                    onClick={() => videoInputRef.current?.click()}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      const file = e.dataTransfer.files?.[0] || null;
+                      if (!file) return;
+                      if (file.size > 100 * 1024 * 1024) {
+                        setVideoError("Video must be 100 MB or less.");
+                        setVideoFile(null);
+                        return;
+                      }
+                      setVideoFile(file);
+                      setVideoError("");
+                    }}
                     className="w-full rounded-xl border-2 border-dashed border-[#D7CBC1] bg-atmosphere p-4 text-center hover:border-leather transition-colors">
                     <Upload className="mx-auto h-6 w-6 text-[#A39289] mb-1" />
                     <p className="text-xs text-neutral-600">
-                      {videoFile ? videoFile.name : "Click to select video"}
+                      {videoFile ? videoFile.name : "Click or drag a video here"}
                     </p>
+                    <p className="text-[10px] text-neutral-400 mt-0.5">Max 100 MB</p>
                   </button>
+                  {videoError && (
+                    <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-600">
+                      <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
+                      {videoError}
+                    </div>
+                  )}
                   <div>
                     <p className="text-xs font-semibold text-neutral-600 uppercase tracking-wide mb-1.5">
                       Note <span className="font-normal normal-case text-neutral-400">(optional)</span>
@@ -528,8 +600,8 @@ export default function JobDetails({ jobId, onBack }) {
             const order = job.order;
             if (!order) return null;
             const SAMPLE_ARTISAN_RATE  = 0.70;
-            const PROD_STAGE1_RATE     = 0.40;
-            const PROD_STAGE2_RATE     = 0.40;
+            const PROD_STAGE1_RATE     = order.snapshotStage1Rate ?? 0.40;
+            const PROD_STAGE2_RATE     = order.snapshotStage2Rate ?? 0.40;
 
             if (isSample) {
               const base     = order.flatFeePaid || 0;
@@ -543,11 +615,11 @@ export default function JobDetails({ jobId, onBack }) {
                   </CardHeader>
                   <CardContent className="pt-0 space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-amber-700">Sample Fee (70%)</span>
+                      <span className="text-amber-700">Sample Fee</span>
                       <span className="font-bold text-amber-900">{formatNaira(earning)}</span>
                     </div>
                     <p className="text-[11px] text-amber-600">
-                      Released by admin after you accept the job. Sent to your bank via Paystack.
+                      Released by admin after you accept/complete the job. Sent to your bank via Paystack.
                     </p>
                   </CardContent>
                 </Card>
@@ -568,11 +640,11 @@ export default function JobDetails({ jobId, onBack }) {
                 </CardHeader>
                 <CardContent className="pt-0 space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-amber-700">Stage 1 — Materials (40%)</span>
+                    <span className="text-amber-700">Stage 1 — Materials</span>
                     <span className="font-semibold text-amber-900">{formatNaira(stage1)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-amber-700">Stage 2 — Service (40%)</span>
+                    <span className="text-amber-700">Stage 2 — Service</span>
                     <span className="font-semibold text-amber-900">{formatNaira(stage2)}</span>
                   </div>
                   <div className="flex justify-between border-t border-amber-200 pt-2">
@@ -593,6 +665,7 @@ export default function JobDetails({ jobId, onBack }) {
               {[
                 { label: "Job Ref",   value: job.ref  || job.id.slice(0, 8).toUpperCase() },
                 { label: "Order Ref", value: job.order?.ref || job.orderId?.slice(0, 8).toUpperCase() },
+                ...(job.order?.quote?.ref ? [{ label: "Quote Ref", value: `[${job.order.quote.ref}]` }] : []),
                 { label: "Type",     value: job.jobType },
                 { label: "Qty",      value: job.quantity },
               ].map((r) => (

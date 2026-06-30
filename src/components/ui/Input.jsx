@@ -2,29 +2,29 @@
 
 import React from "react";
 
-/**
- * A standardized input component with label and error support.
- * Standard JavaScript version for compatibility with the current Amplify build environment.
- */
-export default function Input({ label, error, className = "", ...props }) {
+export default function Input({ label, error, className = "", value, ...props }) {
+  const isFilled = value !== undefined && value !== "";
+
   return (
     <div className="w-full">
-      {/* Optional Label */}
       {label && (
         <label className="block text-sm font-medium text-neutral-900 mb-1.5">
           {label}
         </label>
       )}
 
-      {/* Main Input Field */}
       <input
-        className={`w-full px-4 py-2.5 border border-surface-500 rounded-xl bg-white/90 focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all ${
-          error ? "border-danger focus:ring-danger/30" : "border-surface-500"
+        value={value}
+        className={`w-full px-4 py-2.5 border rounded-xl outline-none transition-all focus:ring-2 focus:ring-[#8B4513]/30 focus:border-leather ${
+          error
+            ? "border-danger bg-red-50 focus:ring-danger/30 focus:border-danger"
+            : isFilled
+            ? "border-leather bg-[#FDF5EE]"
+            : "border-surface-500 bg-white/90"
         } ${className}`}
         {...props}
       />
 
-      {/* Error Message */}
       {error && <p className="mt-1 text-sm text-danger">{error}</p>}
     </div>
   );

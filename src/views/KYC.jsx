@@ -100,12 +100,18 @@ export default function KYC() {
   const [resolvedName, setResolvedName]   = useState("");
   const [verifyError, setVerifyError]     = useState("");
 
-  // Load KYC status on mount
+  // Load KYC status on mount and whenever the tab regains focus
+  // (artisan may have accepted a job in another tab, triggering QoreID check)
   useEffect(() => {
-    getArtisanKycStatus()
-      .then((p) => setKycProfile(p || { status: "not_started" }))
-      .catch(() => {})
-      .finally(() => setBusy(false));
+    const fetchStatus = () => {
+      getArtisanKycStatus()
+        .then((p) => setKycProfile(p || { status: "not_started" }))
+        .catch(() => {})
+        .finally(() => setBusy(false));
+    };
+    fetchStatus();
+    window.addEventListener("focus", fetchStatus);
+    return () => window.removeEventListener("focus", fetchStatus);
   }, []);
 
   // Fetch banks when modal opens
@@ -349,44 +355,61 @@ export default function KYC() {
       {/* ── Physical Address verification info card ── */}
       {(() => {
         const addr = kycProfile.addressStatus;
-        const addrVerified = addr === "verified";
-        const addrFailed   = addr === "failed";
-        const addrPending  = addr === "pending_review";
+        const addrVerified      = addr === "verified";
+        const addrFailed        = addr === "failed";
+        const addrQoreidPending = addr === "qoreid_pending";
+        const addrSaved         = addr === "saved";
+
+        const badgeCfg = addrVerified
+          ? { cls: "border-emerald-200 bg-emerald-50 text-emerald-700",  label: "Verified ✓" }
+          : addrFailed
+          ? { cls: "border-red-200 bg-red-50 text-red-700",              label: "Failed" }
+          : addrQoreidPending
+          ? { cls: "border-blue-200 bg-blue-50 text-blue-700",           label: "QoreID Pending" }
+          : addrSaved
+          ? { cls: "border-amber-200 bg-amber-50 text-amber-700",        label: "Pending" }
+          : { cls: "border-[#E8DED5] bg-[#FFF8EA] text-[#8B6A39]",      label: "Not Entered" };
+
+        const sectionCls = addrVerified
+          ? "border-emerald-200 bg-emerald-50/40"
+          : addrFailed
+          ? "border-red-200 bg-red-50/40"
+          : addrQoreidPending
+          ? "border-blue-100 bg-blue-50/30"
+          : "border-[#E8DED5] bg-white";
+
+        const iconCls = addrVerified
+          ? "bg-emerald-50 text-emerald-600"
+          : addrFailed
+          ? "bg-red-50 text-red-600"
+          : addrQoreidPending
+          ? "bg-blue-50 text-blue-600"
+          : "bg-[#FFF8EA] text-[#8B6A39]";
+
+        const description = addrVerified
+          ? "Your business address has been verified by QoreID."
+          : addrFailed
+          ? "Your address could not be verified. Please contact support or update your address and try again."
+          : addrQoreidPending
+          ? "A QoreID agent has been dispatched to verify your workplace address. This usually takes 1–2 business days. You'll be notified by email when it's done."
+          : addrSaved
+          ? "Your address has been saved. It will be sent to QoreID for physical verification when you accept your first job."
+          : "Enter your workplace address in Step 2 above. QoreID will verify it physically after you accept your first job.";
+
         return (
-          <section className={`rounded-2xl border px-6 py-5 ${
-            addrVerified ? "border-emerald-200 bg-emerald-50/40"
-            : addrFailed  ? "border-red-200 bg-red-50/40"
-            : "border-[#E8DED5] bg-white"
-          }`}>
+          <section className={`rounded-2xl border px-6 py-5 ${sectionCls}`}>
             <div className="flex items-start gap-4">
-              <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
-                addrVerified ? "bg-emerald-50 text-emerald-600"
-                : addrFailed  ? "bg-red-50 text-red-600"
-                : "bg-[#FFF8EA] text-[#8B6A39]"
-              }`}>
+              <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${iconCls}`}>
                 <MapPin size={20} />
               </div>
               <div className="flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-sm font-semibold text-ink">Physical Address Verification (QoreID)</p>
-                  <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${
-                    addrVerified ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                    : addrFailed  ? "border-red-200 bg-red-50 text-red-700"
-                    : addrPending ? "border-blue-200 bg-blue-50 text-blue-700"
-                    : "border-[#E8DED5] bg-[#FFF8EA] text-[#8B6A39]"
-                  }`}>
-                    {addrVerified ? "Verified ✓" : addrFailed ? "Failed" : addrPending ? "In Progress" : "Auto-triggered"}
+                  <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${badgeCfg.cls}`}>
+                    {badgeCfg.label}
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-neutral-600 leading-5">
-                  {addrVerified
-                    ? "Your business address has been verified by QoreID."
-                    : addrFailed
-                    ? "Your address could not be verified. Contact support if this is unexpected."
-                    : addrPending
-                    ? "Your address is being verified in the background."
-                    : "The address you enter in Step 2 will be automatically verified by QoreID when you accept your first job. No action needed on your part."}
-                </p>
+                <p className="mt-1 text-xs text-neutral-600 leading-5">{description}</p>
               </div>
             </div>
           </section>
@@ -691,10 +714,7 @@ export default function KYC() {
               {stepError && <ErrorBox msg={stepError} />}
 
               <div className="flex gap-3">
-                <Button type="button" variant="outline" fullWidth
-                  onClick={() => { setStep(2); setStepError(""); }}>
-                  <ChevronLeft size={16} /> Back
-                </Button>
+                <BackButton onClick={() => { setStep(2); setStepError(""); }} />
                 <Button
                   type="submit"
                   variant="primary"

@@ -441,7 +441,7 @@ export default function TermsAndConditions() {
               <Section id="s25" num={25} title="Data Protection and Privacy">
                 <p className="mb-3 text-neutral-800">LEDDAR processes personal data in connection with account setup, verification, production workflows, communications, and payment-related activities. Nigeria&apos;s Data Protection Act 2023 provides for lawful, fair, and accountable processing of personal data, along with data subject rights.</p>
                 <p className="mb-2 text-neutral-800">By using LEDDAR, you acknowledge that your data may be processed to provide platform services, shared with service providers involved in verification, hosting, messaging, analytics, or payment processing, and processed on lawful bases such as contract, consent, or legal obligation.</p>
-                <p className="text-neutral-800">Your privacy rights and our detailed data handling rules are set out in LEDDAR&apos;s <Link href="/privacy-policy" className="text-leather underline hover:text-espresso">Privacy Policy</Link>, which forms part of the platform&apos;s legal framework.</p>
+                <p className="text-neutral-800">Your privacy rights and our detailed data handling rules are set out in LEDDAR&apos;s <Link href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-leather underline hover:text-espresso">Privacy Policy</Link>, which forms part of the platform&apos;s legal framework.</p>
               </Section>
 
               <Section id="s26" num={26} title="Availability and Changes to the Platform">
@@ -517,7 +517,7 @@ export default function TermsAndConditions() {
                     <ChevronLeft className="h-4 w-4" />
                     Back to Signup
                   </Link>
-                  <Link href="/privacy-policy" className="text-sm text-leather underline hover:text-espresso transition-colors">
+                  <Link href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-sm text-leather underline hover:text-espresso transition-colors">
                     ← View Privacy Policy
                   </Link>
                 </div>

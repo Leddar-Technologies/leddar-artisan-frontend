@@ -100,6 +100,15 @@ export default function Jobs() {
 
   const filteredJobs = jobs.filter((j) => filter === "all" || j.jobType === filter);
 
+  // Group jobs by orderId so sample + production appear together
+  const groupedOrders = filteredJobs.reduce((acc, job) => {
+    const key = job.order?.id || job.id;
+    if (!acc[key]) acc[key] = { orderRef: job.order?.ref || "—", quoteRef: job.order?.quote?.ref || null, productType: job.productType, jobs: [] };
+    acc[key].jobs.push(job);
+    return acc;
+  }, {});
+  const orderGroups = Object.values(groupedOrders);
+
   const counts = {
     all:        jobs.length,
     sample:     jobs.filter((j) => j.jobType === "sample").length,
@@ -113,6 +122,12 @@ export default function Jobs() {
       return;
     }
     await dispatch(acceptJob(jobId));
+    // Re-fetch KYC status after a short delay — accepting the first job triggers
+    // QoreID address check (fire-and-forget) which sets addressStatus = IN_PROGRESS.
+    // The delay gives the background task time to write to DB before we re-fetch.
+    setTimeout(() => {
+      getArtisanKycStatus().then((profile) => setKycProfile(profile)).catch(() => {});
+    }, 1500);
   };
 
   const handleDecline = async (jobId) => {
@@ -217,9 +232,27 @@ export default function Jobs() {
             ))}
           </div>
 
-          {/* Job cards */}
-          <div className="grid gap-6">
-            {filteredJobs.map((job) => (
+          {/* Job cards — grouped by order */}
+          <div className="grid gap-8">
+            {orderGroups.map((group) => (
+              <div key={group.orderRef} className="space-y-3">
+                {/* Order group header */}
+                <div className="flex flex-wrap items-center gap-2 px-1">
+                  <span className="rounded-full border border-leather/30 bg-leather/5 px-3 py-0.5 text-xs font-bold text-leather tracking-wide">
+                    Order · {group.orderRef}
+                  </span>
+                  {group.quoteRef && (
+                    <span className="font-mono text-[10px] font-semibold text-[#6A5B54] bg-[#F4EFEA] border border-[#E8DED5] rounded px-1.5 py-0.5">
+                      [{group.quoteRef}]
+                    </span>
+                  )}
+                  <span className="text-sm font-semibold text-ink">{group.productType}</span>
+                  {group.jobs.length > 1 && (
+                    <span className="text-xs text-neutral-500">· {group.jobs.length} jobs</span>
+                  )}
+                </div>
+
+                {group.jobs.map((job) => (
               <Card key={job.id} className="overflow-hidden border-surface-400/70 hover:shadow-card transition-shadow">
                 <CardHeader className="bg-surface-100/60 pb-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
@@ -231,7 +264,6 @@ export default function Jobs() {
                         </Badge>
                       </div>
                       <p className="text-sm text-neutral-600">
-                        {job.order?.brand?.businessName && `Brand: ${job.order.brand.businessName} · `}
                         Created {new Date(job.createdAt).toLocaleDateString("en-NG")}
                         {job.deadline ? ` · Due ${new Date(job.deadline).toLocaleDateString("en-NG")}` : ""}
                       </p>
@@ -299,6 +331,8 @@ export default function Jobs() {
                   </div>
                 </CardContent>
               </Card>
+                ))}
+              </div>
             ))}
           </div>
         </div>
