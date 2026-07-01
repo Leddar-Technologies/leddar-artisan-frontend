@@ -272,7 +272,6 @@ export default function Profile() {
                 </select>
               </div>
             </div>
-            </div>
 
             {/* Portfolio */}
             <div className="rounded-xl border border-stone-200 bg-stone-50 p-4">
