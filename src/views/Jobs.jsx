@@ -302,6 +302,18 @@ export default function Jobs() {
                     </div>
                   </div>
 
+                  {job.order?.quote?.brandProvides?.filter((i) => i !== "I don't need any of these").length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {job.order.quote.brandProvides
+                        .filter((i) => i !== "I don't need any of these")
+                        .map((item) => (
+                          <span key={item} className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800">
+                            {item}
+                          </span>
+                        ))}
+                    </div>
+                  )}
+
                   <div className="flex flex-col gap-3 border-t border-surface-400/70 pt-4 sm:flex-row sm:items-center">
                     {job.status === "assigned" && (
                       <>

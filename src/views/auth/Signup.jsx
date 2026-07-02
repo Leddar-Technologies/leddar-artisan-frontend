@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
-import { registerArtisan, resetAuth } from "../../redux/slices/authSlice";
+import { registerArtisan, resendVerification, resetAuth } from "../../redux/slices/authSlice";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import PhoneInput, { validatePhone, normalizePhone } from "../../components/ui/PhoneInput";
@@ -83,6 +83,31 @@ export default function Signup() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const RESEND_COOLDOWN_SECONDS = 10 * 60;
+  const [resendStatus, setResendStatus] = useState("idle"); // idle | sending
+  const [resendMessage, setResendMessage] = useState("");
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => setCooldown((c) => Math.max(0, c - 1)), 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
+
+  const handleResend = async () => {
+    setResendStatus("sending");
+    setResendMessage("");
+    try {
+      const message = await dispatch(resendVerification(formData.email)).unwrap();
+      setResendMessage(message);
+      setCooldown(RESEND_COOLDOWN_SECONDS);
+    } catch (err) {
+      setResendMessage(err || "Failed to resend verification email.");
+    } finally {
+      setResendStatus("idle");
+    }
+  };
 
   useEffect(() => {
     dispatch(resetAuth());
@@ -203,10 +228,25 @@ export default function Signup() {
             <h2 className="text-2xl font-bold text-ink mb-2">
               Application Received
             </h2>
-            <p className="text-neutral-800 mb-6">
+            <p className="text-neutral-800 mb-2">
               Check your email (<strong>{formData.email}</strong>) to confirm
               your account.
             </p>
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={resendStatus === "sending" || cooldown > 0}
+              className="text-sm font-bold text-leather underline hover:text-espresso transition disabled:opacity-50 disabled:no-underline mb-6"
+            >
+              {cooldown > 0
+                ? `Resend available in ${Math.floor(cooldown / 60)}:${String(cooldown % 60).padStart(2, "0")}`
+                : resendStatus === "sending"
+                ? "Sending..."
+                : "Didn't get it? Resend verification email"}
+            </button>
+            {resendMessage && (
+              <p className="text-xs text-neutral-700 mb-4">{resendMessage}</p>
+            )}
             <Link href="/login">
               <Button variant="primary">Back to Login</Button>
             </Link>

@@ -370,6 +370,20 @@ export default function JobDetails({ jobId, onBack }) {
                   <p className="text-sm text-neutral-700 leading-relaxed">{job.specifications}</p>
                 </div>
               )}
+              {job.order?.quote?.brandProvides?.filter((i) => i !== "I don't need any of these").length > 0 && (
+                <div>
+                  <p className="text-xs text-neutral-500 uppercase tracking-wide mb-2">Branding to Include</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {job.order.quote.brandProvides
+                      .filter((i) => i !== "I don't need any of these")
+                      .map((item) => (
+                        <span key={item} className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800">
+                          {item}
+                        </span>
+                      ))}
+                  </div>
+                </div>
+              )}
               {/* Reference files */}
               {job.order?.quote?.files?.length > 0 && (
                 <div>

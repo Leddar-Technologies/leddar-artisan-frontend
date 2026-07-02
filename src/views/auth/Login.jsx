@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { login, resetAuth } from "../../redux/slices/authSlice";
+import { login, resendVerification, resetAuth } from "../../redux/slices/authSlice";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import { LogIn, Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
@@ -21,9 +21,37 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [localError, setLocalError] = useState("");
 
+  const RESEND_COOLDOWN_SECONDS = 10 * 60;
+  const [resendStatus, setResendStatus] = useState("idle"); // idle | sending
+  const [resendMessage, setResendMessage] = useState("");
+  const [cooldown, setCooldown] = useState(0);
+
   useEffect(() => {
     return () => { dispatch(resetAuth()); };
   }, [dispatch]);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => setCooldown((c) => Math.max(0, c - 1)), 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
+
+  const isUnverifiedError =
+    typeof serverError === "string" && /verify your email/i.test(serverError);
+
+  const handleResend = async () => {
+    setResendStatus("sending");
+    setResendMessage("");
+    try {
+      const message = await dispatch(resendVerification(email)).unwrap();
+      setResendMessage(message);
+      setCooldown(RESEND_COOLDOWN_SECONDS);
+    } catch (err) {
+      setResendMessage(err || "Failed to resend verification email.");
+    } finally {
+      setResendStatus("idle");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -105,12 +133,36 @@ export default function Login() {
             {(localError || serverError) && (
               <div className="bg-danger/10 text-danger border border-danger/30 px-4 py-3 rounded-xl text-sm flex items-start gap-2 animate-in fade-in duration-300">
                 <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
-                <span>
-                  {localError ||
-                    (typeof serverError === "string"
-                      ? serverError
-                      : "Invalid email or password")}
-                </span>
+                <div>
+                  <span>
+                    {localError ||
+                      (typeof serverError === "string"
+                        ? serverError
+                        : "Invalid email or password")}
+                  </span>
+                  {isUnverifiedError && (
+                    <div className="mt-2">
+                      <button
+                        type="button"
+                        onClick={handleResend}
+                        disabled={resendStatus === "sending" || cooldown > 0}
+                        className="text-xs font-bold text-leather underline hover:text-espresso transition disabled:opacity-50 disabled:no-underline"
+                      >
+                        {cooldown > 0
+                          ? `Resend available in ${Math.floor(cooldown / 60)}:${String(cooldown % 60).padStart(2, "0")}`
+                          : resendStatus === "sending"
+                          ? "Sending..."
+                          : "Resend verification email"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {resendMessage && (
+              <div className="bg-surface-400 text-neutral-800 text-xs px-3 py-2 rounded-lg text-center font-medium">
+                {resendMessage}
               </div>
             )}
 

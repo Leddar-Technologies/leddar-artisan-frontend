@@ -13,9 +13,6 @@ export const registerArtisan = createAsyncThunk(
       const response = await axios.post(
         `${API_URL}/auth/register/artisan`,
         formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        },
       );
       return response.data;
     } catch (err) {
@@ -40,6 +37,20 @@ export const login = createAsyncThunk(
       // Server always returns a sanitized, friendly error message
       return rejectWithValue(
         err.response?.data?.error || "Something went wrong. Please try again."
+      );
+    }
+  },
+);
+
+export const resendVerification = createAsyncThunk(
+  "auth/resendVerification",
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API_URL}/auth/resend-verification`, { email });
+      return response.data.message;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.error || "Failed to resend verification email",
       );
     }
   },
