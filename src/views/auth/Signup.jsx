@@ -162,24 +162,42 @@ export default function Signup() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const PORTFOLIO_MAX_SIZE = 10 * 1024 * 1024; // matches backend docFileFilter
+  const PORTFOLIO_ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"]; // matches backend docFileFilter
+
   const handlePortfolioChange = (e) => {
     setPortfolioError("");
     const files = Array.from(e.target.files || []);
 
-    if (files.length + portfolioImages.length > 4) {
-      setPortfolioError("Maximum 4 images allowed");
+    const remainingSlots = 4 - portfolioImages.length;
+    if (files.length > remainingSlots) {
+      setPortfolioError(
+        remainingSlots > 0
+          ? `You selected ${files.length} images, but only ${remainingSlots} more can be added (max 4 total).`
+          : "You've already selected the maximum of 4 images.",
+      );
       return;
     }
 
-    const validFiles = files.filter((file) => {
-      const isValidType = ["image/jpeg", "image/png"].includes(file.type);
-      const isValidSize = file.size <= 5 * 1024 * 1024;
+    const validFiles = [];
+    const rejectionReasons = [];
 
-      if (!isValidType) setPortfolioError("Only JPG and PNG formats allowed");
-      if (!isValidSize) setPortfolioError("Each image must be under 5MB");
-
-      return isValidType && isValidSize;
+    files.forEach((file) => {
+      if (!PORTFOLIO_ALLOWED_TYPES.includes(file.type)) {
+        rejectionReasons.push(`"${file.name}" was skipped — only JPG, PNG, or WebP images are allowed.`);
+        return;
+      }
+      if (file.size > PORTFOLIO_MAX_SIZE) {
+        const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+        rejectionReasons.push(`"${file.name}" was skipped — it's ${sizeMb}MB, the limit is 10MB.`);
+        return;
+      }
+      validFiles.push(file);
     });
+
+    if (rejectionReasons.length > 0) {
+      setPortfolioError(rejectionReasons.join(" "));
+    }
 
     setPortfolioImages((prev) => [...prev, ...validFiles]);
   };
