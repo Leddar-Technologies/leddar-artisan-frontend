@@ -355,7 +355,16 @@ export default function JobDetails({ jobId, onBack }) {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <p className="text-xs text-neutral-500 uppercase tracking-wide">Quantity</p>
-                  <p className="mt-1 font-semibold text-ink">{job.quantity} {isSample ? "piece" : "units"}</p>
+                  {isSample ? (
+                    <>
+                      <p className="mt-1 font-semibold text-ink">1 piece (sample)</p>
+                      <p className="mt-0.5 text-xs text-neutral-500">
+                        Bulk order if approved: {job.quantity} units
+                      </p>
+                    </>
+                  ) : (
+                    <p className="mt-1 font-semibold text-ink">{job.quantity} units</p>
+                  )}
                 </div>
                 <div>
                   <p className="text-xs text-neutral-500 uppercase tracking-wide">Deadline</p>
@@ -618,8 +627,11 @@ export default function JobDetails({ jobId, onBack }) {
             const PROD_STAGE2_RATE     = order.snapshotStage2Rate ?? 0.40;
 
             if (isSample) {
+              const samplePayment = order.payments?.find((p) => p.stage === "SAMPLE_FLAT_FEE");
               const base     = order.flatFeePaid || 0;
-              const earning  = Math.round(SAMPLE_ARTISAN_RATE * base);
+              // Once released, show the actual transferred amount rather than a live
+              // recomputation — it's the ground truth and never drifts from what hit the bank.
+              const earning  = samplePayment?.amount ?? Math.floor(SAMPLE_ARTISAN_RATE * base);
               return (
                 <Card className="border-amber-200 bg-amber-50/60">
                   <CardHeader className="pb-2">
@@ -640,10 +652,16 @@ export default function JobDetails({ jobId, onBack }) {
               );
             }
 
-            // Production job
-            const base       = order.escrowBalance || order.totalAmount || order.quote?.price || 0;
-            const stage1     = Math.round(PROD_STAGE1_RATE * base);
-            const stage2     = Math.round(PROD_STAGE2_RATE * base);
+            // Production job — order.productionBase is the stable pre-VAT split base (quote
+            // price minus sample credit), computed server-side. It does NOT move as Stage 1/
+            // Stage 2 release, unlike order.escrowBalance which now draws down on each payout.
+            const materialPayment = order.payments?.find((p) => p.stage === "MATERIAL");
+            const servicePayment  = order.payments?.find((p) => p.stage === "SERVICE");
+            const base       = order.productionBase ?? order.totalAmount ?? order.quote?.price ?? 0;
+            // Once a stage is released, show the actual transferred amount rather than a live
+            // recomputation — it's the ground truth and never drifts from what hit the bank.
+            const stage1     = materialPayment?.amount ?? Math.floor(PROD_STAGE1_RATE * base);
+            const stage2     = servicePayment?.amount  ?? Math.floor(PROD_STAGE2_RATE * base);
             const total      = stage1 + stage2;
             return (
               <Card className="border-amber-200 bg-amber-50/60">

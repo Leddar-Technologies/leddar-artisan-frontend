@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateProfile } from "../redux/slices/authSlice";
 import apiClient from "../services/apiClient";
+import Modal from "../components/ui/Modal";
 import {
   Save, Loader2, CheckCircle2, AlertCircle,
   ShieldCheck, Landmark, Info,
@@ -62,6 +63,7 @@ export default function BankDetails() {
   const [saved, setSaved]         = useState(false);
   const [dbDetail, setDbDetail]   = useState(null);   // loaded from DB
   const [fetching, setFetching]   = useState(true);   // initial DB fetch
+  const [otpModal, setOtpModal]   = useState({ open: false, otp: "", error: "" });
 
   // Fetch saved bank details from DB on mount
   useEffect(() => {
@@ -144,6 +146,30 @@ export default function BankDetails() {
     }
   };
 
+  const applySavedAccount = () => {
+    // Update local DB-fetched state so the saved card shows immediately
+    const savedAccount = {
+      bankName:      bankData.bankName,
+      bankCode:      bankData.bankCode,
+      accountName:   bankData.accountName,
+      accountNumber: bankData.accountNumber,
+    };
+    setDbDetail(savedAccount);
+
+    // Keep Redux + localStorage in sync too
+    dispatch(updateProfile({ bankAccount: savedAccount }));
+    if (typeof window !== "undefined") {
+      const stored = JSON.parse(localStorage.getItem("user") || "null");
+      if (stored) {
+        stored.bankAccount = savedAccount;
+        localStorage.setItem("user", JSON.stringify(stored));
+      }
+    }
+
+    setSaved(true);
+    setTimeout(() => setSaved(false), 5000);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!bankData.bankCode) { setSaveError("Please select your bank."); return; }
@@ -152,31 +178,36 @@ export default function BankDetails() {
 
     setSaving(true); setSaveError(""); setSaved(false);
     try {
-      await apiClient.put("/artisans/bank-details", bankData);
-
-      // Update local DB-fetched state so the saved card shows immediately
-      const savedAccount = {
-        bankName:      bankData.bankName,
-        bankCode:      bankData.bankCode,
-        accountName:   bankData.accountName,
-        accountNumber: bankData.accountNumber,
-      };
-      setDbDetail(savedAccount);
-
-      // Keep Redux + localStorage in sync too
-      dispatch(updateProfile({ bankAccount: savedAccount }));
-      if (typeof window !== "undefined") {
-        const stored = JSON.parse(localStorage.getItem("user") || "null");
-        if (stored) {
-          stored.bankAccount = savedAccount;
-          localStorage.setItem("user", JSON.stringify(stored));
-        }
+      const res = await apiClient.put("/artisans/bank-details", bankData);
+      if (res.data.requiresOtp) {
+        setOtpModal({ open: true, otp: "", error: "" });
+      } else {
+        applySavedAccount();
       }
-
-      setSaved(true);
-      setTimeout(() => setSaved(false), 5000);
     } catch (err) {
       setSaveError(err.response?.data?.message || "Failed to save bank details.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleOtpConfirm = async () => {
+    if (!otpModal.otp.trim()) {
+      setOtpModal((p) => ({ ...p, error: "Enter the OTP from your email." }));
+      return;
+    }
+    setSaving(true);
+    setOtpModal((p) => ({ ...p, error: "" }));
+    try {
+      const res = await apiClient.put("/artisans/bank-details", { ...bankData, otp: otpModal.otp.trim() });
+      if (res.data.requiresOtp) {
+        setOtpModal((p) => ({ ...p, error: "Still awaiting confirmation — request a new OTP and try again." }));
+        return;
+      }
+      setOtpModal({ open: false, otp: "", error: "" });
+      applySavedAccount();
+    } catch (err) {
+      setOtpModal((p) => ({ ...p, error: err.response?.data?.message || "Incorrect OTP." }));
     } finally {
       setSaving(false);
     }
@@ -290,8 +321,8 @@ export default function BankDetails() {
             required
           >
             <option value="">Select your bank</option>
-            {banks.map((b) => (
-              <option key={b.code} value={b.code}>{b.name}</option>
+            {banks.map((b, i) => (
+              <option key={b.id ?? `${b.code}-${i}`} value={b.code}>{b.name}</option>
             ))}
           </select>
         </div>
@@ -396,9 +427,67 @@ export default function BankDetails() {
         <Info className="h-4 w-4 shrink-0 mt-0.5 text-stone-400" />
         <p>
           Your account number is verified directly with Paystack before saving.
+          Changes are confirmed with a one-time code sent to your email.
           Payments are released by the Leddar admin after each completed job stage.
         </p>
       </div>
+
+      {/* OTP confirmation modal */}
+      <Modal
+        title="Confirm Bank Details Change"
+        open={otpModal.open}
+        onClose={() => setOtpModal({ open: false, otp: "", error: "" })}
+      >
+        <div className="space-y-4">
+          <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+            <AlertCircle className="h-4 w-4 mt-0.5 shrink-0 text-amber-600" />
+            <p className="text-sm text-amber-800">
+              Check your email for a 6-digit code and enter it below to confirm this change.
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wide text-stone-500 mb-1.5">
+              One-Time Password (OTP)
+            </label>
+            <input
+              type="text"
+              inputMode="numeric"
+              maxLength={6}
+              autoFocus
+              value={otpModal.otp}
+              onChange={(e) => setOtpModal((p) => ({ ...p, otp: e.target.value.replace(/\D/g, "") }))}
+              placeholder="e.g. 123456"
+              className="w-full rounded-xl border border-stone-300 bg-stone-50 px-4 py-3.5 text-center text-2xl font-extrabold tracking-[0.5em] text-stone-900 outline-none focus:border-amber-700 focus:ring-2 focus:ring-amber-700/20 transition"
+            />
+          </div>
+
+          {otpModal.error && (
+            <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <AlertCircle className="h-4 w-4 shrink-0" /> {otpModal.error}
+            </div>
+          )}
+
+          <div className="flex gap-3">
+            <button
+              onClick={handleOtpConfirm}
+              disabled={saving || otpModal.otp.length < 4}
+              className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-amber-700 py-3 text-sm font-bold text-white hover:bg-amber-800 disabled:opacity-50 transition-colors shadow-sm"
+            >
+              {saving
+                ? <><Loader2 className="h-4 w-4 animate-spin" /> Verifying…</>
+                : <><CheckCircle2 className="h-4 w-4" /> Confirm OTP</>
+              }
+            </button>
+            <button
+              onClick={() => setOtpModal({ open: false, otp: "", error: "" })}
+              className="flex-1 rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm font-medium text-stone-900 hover:bg-stone-50 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

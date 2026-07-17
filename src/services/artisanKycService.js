@@ -45,11 +45,12 @@ export async function getArtisanKycStatus() {
     const data = res.data.data || {};
 
     const statusMap = {
-      VERIFIED:    "verified",
-      FAILED:      "failed",
-      NOT_STARTED: "not_started",
-      PENDING:     "saved",        // address entered, awaiting first job
-      IN_PROGRESS: "qoreid_pending", // QoreID check triggered
+      VERIFIED:     "verified",
+      FAILED:       "failed",        // technical failure — couldn't submit to QoreID
+      NOT_VERIFIED: "not_verified",  // QoreID physically checked and couldn't confirm the address
+      NOT_STARTED:  "not_started",
+      PENDING:      "saved",         // address entered, awaiting first job
+      IN_PROGRESS:  "qoreid_pending", // QoreID check triggered
     };
 
     const profile = {
@@ -58,6 +59,7 @@ export async function getArtisanKycStatus() {
       addressStatus: statusMap[data.addressStatus] || null,
       hasAddress:    !!(data.hasAddress),
       hasBankDetails: !!(data.hasBankDetails),
+      address:       data.address || null, // { state, workAddress, city, lgaName, landmark } — for prefilling the edit form on retry
       idType:        data.idType   || null,
       provider:      data.provider || null,
       updatedAt:     new Date().toISOString(),
@@ -101,13 +103,23 @@ export async function verifyArtisanIdentity({ idNumber, firstname, lastname }) {
 
 /**
  * Step 2 — Save business address fields.
- * All of state, workAddress (street), city, lgaName are required by QoreID.
+ * All of state, workAddress (street), city, lgaName, phone are required by QoreID —
+ * phone is the number QoreID's agent will call to arrange/confirm the site visit.
  */
-export async function saveArtisanWorkProfile({ state, workAddress, city, lgaName, landmark }) {
+export async function saveArtisanWorkProfile({ state, workAddress, city, lgaName, landmark, phone }) {
   const res = await apiClient.patch("/artisans/profile", {
-    state, workAddress, city, lgaName,
+    state, workAddress, city, lgaName, phone,
     landmark: landmark || undefined,
   });
+  return res.data.data;
+}
+
+/**
+ * Manually resend the address to QoreID after a technical FAILED submission.
+ * Only succeeds when addressStatus is currently FAILED.
+ */
+export async function retryAddressVerification() {
+  const res = await apiClient.post("/artisans/kyc-status/retry-address");
   return res.data.data;
 }
 
@@ -123,15 +135,19 @@ export async function resolveBankAccount(accountNumber, bankCode) {
 
 /**
  * Step 3 — Save verified bank details for payouts.
+ * The first call (no otp) only triggers an email OTP and returns
+ * { requiresOtp: true } without persisting anything — the caller must
+ * resubmit with the emailed code to actually save the bank details.
  */
-export async function saveArtisanBankDetails({ bankName, bankCode, accountName, accountNumber }) {
+export async function saveArtisanBankDetails({ bankName, bankCode, accountName, accountNumber, otp }) {
   const res = await apiClient.put("/artisans/bank-details", {
     bankName,
     bankCode: bankCode || null,
     accountName,
     accountNumber,
+    ...(otp && { otp }),
   });
-  return res.data.data;
+  return res.data;
 }
 
 /**

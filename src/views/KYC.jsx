@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { updateProfile } from "../redux/slices/authSlice";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
+import PhoneInput, { validatePhone, normalizePhone } from "../components/ui/PhoneInput";
 import {
   ShieldCheck, AlertCircle, CheckCircle2, Fingerprint,
   MapPin, CreditCard, ChevronRight, ChevronLeft,
@@ -18,7 +19,9 @@ import {
   resolveBankAccount,
   fetchArtisanBanks,
   clearLocalKyc,
+  retryAddressVerification,
 } from "../services/artisanKycService";
+import NIGERIA_STATE_LGAS from "../data/nigeriaLGAs";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -91,6 +94,10 @@ export default function KYC() {
   const [city, setCity]               = useState("");
   const [lgaName, setLgaName]         = useState("");
   const [landmark, setLandmark]       = useState("");
+  const [addressPhone, setAddressPhone] = useState(""); // number QoreID's agent will call
+  // True when Step 2 was opened to fix a technical FAILED submission — on save,
+  // resend to QoreID immediately instead of advancing to Step 3.
+  const [addressRetryMode, setAddressRetryMode] = useState(false);
 
   // Step 3 — bank details with Paystack verification
   const [bankCode, setBankCode]           = useState("");
@@ -99,6 +106,8 @@ export default function KYC() {
   const [verifyState, setVerifyState]     = useState("idle"); // idle | loading | verified | error
   const [resolvedName, setResolvedName]   = useState("");
   const [verifyError, setVerifyError]     = useState("");
+  // Email OTP confirmation required by PUT /artisans/bank-details before it saves anything
+  const [bankOtp, setBankOtp] = useState({ required: false, code: "", error: "" });
 
   // Load KYC status on mount and whenever the tab regains focus
   // (artisan may have accepted a job in another tab, triggering QoreID check)
@@ -134,6 +143,7 @@ export default function KYC() {
   function openModal() {
     // Jump directly to first incomplete step
     const startStep = !isNinVerified ? 1 : !kycProfile.hasAddress ? 2 : 3;
+    setAddressRetryMode(false);
     setStep(startStep);
     setStepError("");
     setIdFields({ idNumber: "", firstname: "", lastname: "" });
@@ -142,10 +152,12 @@ export default function KYC() {
     setCity("");
     setLgaName("");
     setLandmark("");
+    setAddressPhone("");
     setBankCode("");
     setBankName("");
     setAccountNumber("");
     resetBankVerification();
+    setBankOtp({ required: false, code: "", error: "" });
     setModalOpen(true);
   }
 
@@ -155,6 +167,26 @@ export default function KYC() {
     setStep(1);
     setStepError("");
     setIdFields({ idNumber: "", firstname: "", lastname: "" });
+    setModalOpen(true);
+  }
+
+  // Address submission failed for a technical reason (couldn't reach QoreID).
+  // Let the artisan review/edit the address before resending — prefill Step 2
+  // with what's on file instead of blanking it out.
+  function openAddressRetryModal() {
+    const addr = kycProfile.address || {};
+    setAddressRetryMode(true);
+    setStep(2);
+    setStepError("");
+    setState(addr.state || "");
+    setWorkAddress(addr.workAddress || "");
+    setCity(addr.city || "");
+    // Don't carry forward an LGA that isn't valid for this state (e.g. a
+    // pre-dropdown record saved with a mismatched pair) — force a fresh pick.
+    const validLgas = NIGERIA_STATE_LGAS[addr.state] || [];
+    setLgaName(validLgas.includes(addr.lgaName) ? addr.lgaName : "");
+    setLandmark(addr.landmark || "");
+    setAddressPhone(addr.phone || "");
     setModalOpen(true);
   }
 
@@ -232,13 +264,30 @@ export default function KYC() {
     setStepError("");
     if (!state)              { setStepError("Please select your state."); return; }
     if (!city.trim())        { setStepError("Please enter your city."); return; }
-    if (!lgaName.trim())     { setStepError("Please enter your LGA (Local Government Area)."); return; }
+    if (!lgaName.trim())     { setStepError("Please select your LGA (Local Government Area)."); return; }
     if (!workAddress.trim()) { setStepError("Please enter your street address."); return; }
+    if (!validatePhone(normalizePhone(addressPhone))) {
+      setStepError("Please enter a valid phone number — QoreID's agent will call this number.");
+      return;
+    }
     setSubmitting(true);
     try {
-      await saveArtisanWorkProfile({ state, workAddress, city, lgaName, landmark });
-      setKycProfile((p) => ({ ...p, hasAddress: true }));
-      setStep(3);
+      const phone = normalizePhone(addressPhone);
+      await saveArtisanWorkProfile({ state, workAddress, city, lgaName, landmark, phone });
+
+      if (addressRetryMode) {
+        // Technical failure fix — resend to QoreID right away instead of
+        // waiting for another job acceptance (there won't be one; the
+        // artisan already has an active job, which is what triggered this).
+        await retryAddressVerification();
+        const refreshed = await getArtisanKycStatus();
+        if (refreshed) setKycProfile(refreshed);
+        setAddressRetryMode(false);
+        setModalOpen(false);
+      } else {
+        setKycProfile((p) => ({ ...p, hasAddress: true }));
+        setStep(3);
+      }
     } catch (err) {
       setStepError(err.response?.data?.message || err.message || "Failed to save address. Please try again.");
     } finally {
@@ -247,6 +296,14 @@ export default function KYC() {
   }
 
   // ── Step 3: Bank Details ──────────────────────────────────────────────────
+  function finishBankDetails() {
+    setKycProfile((p) => ({ ...p, hasBankDetails: true }));
+    setBankOtp({ required: false, code: "", error: "" });
+    setModalOpen(false);
+    // Refresh full status from server
+    getArtisanKycStatus().then((p) => { if (p) setKycProfile(p); });
+  }
+
   async function handleStep3(e) {
     e.preventDefault();
     setStepError("");
@@ -256,18 +313,46 @@ export default function KYC() {
 
     setSubmitting(true);
     try {
-      await saveArtisanBankDetails({
+      const result = await saveArtisanBankDetails({
         bankName,
         bankCode,
         accountName:   resolvedName,
         accountNumber,
       });
-      setKycProfile((p) => ({ ...p, hasBankDetails: true }));
-      setModalOpen(false);
-      // Refresh full status from server
-      getArtisanKycStatus().then((p) => { if (p) setKycProfile(p); });
+      if (result.requiresOtp) {
+        setBankOtp({ required: true, code: "", error: "" });
+        return;
+      }
+      finishBankDetails();
     } catch (err) {
       setStepError(err.response?.data?.message || err.message || "Failed to save bank details.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleBankOtpConfirm() {
+    if (!bankOtp.code.trim()) {
+      setBankOtp((p) => ({ ...p, error: "Enter the OTP from your email." }));
+      return;
+    }
+    setSubmitting(true);
+    setBankOtp((p) => ({ ...p, error: "" }));
+    try {
+      const result = await saveArtisanBankDetails({
+        bankName,
+        bankCode,
+        accountName:   resolvedName,
+        accountNumber,
+        otp: bankOtp.code.trim(),
+      });
+      if (result.requiresOtp) {
+        setBankOtp((p) => ({ ...p, error: "Still awaiting confirmation — request a new OTP and try again." }));
+        return;
+      }
+      finishBankDetails();
+    } catch (err) {
+      setBankOtp((p) => ({ ...p, error: err.response?.data?.message || "Incorrect OTP." }));
     } finally {
       setSubmitting(false);
     }
@@ -356,14 +441,17 @@ export default function KYC() {
       {(() => {
         const addr = kycProfile.addressStatus;
         const addrVerified      = addr === "verified";
-        const addrFailed        = addr === "failed";
+        const addrNotVerified   = addr === "not_verified"; // QoreID visited physically and couldn't confirm it
+        const addrFailed        = addr === "failed";        // couldn't submit to QoreID — technical issue
         const addrQoreidPending = addr === "qoreid_pending";
         const addrSaved         = addr === "saved";
 
         const badgeCfg = addrVerified
           ? { cls: "border-emerald-200 bg-emerald-50 text-emerald-700",  label: "Verified ✓" }
+          : addrNotVerified
+          ? { cls: "border-red-200 bg-red-50 text-red-700",              label: "Not Verified" }
           : addrFailed
-          ? { cls: "border-red-200 bg-red-50 text-red-700",              label: "Failed" }
+          ? { cls: "border-orange-200 bg-orange-50 text-orange-700",     label: "Submission Failed" }
           : addrQoreidPending
           ? { cls: "border-blue-200 bg-blue-50 text-blue-700",           label: "QoreID Pending" }
           : addrSaved
@@ -372,24 +460,30 @@ export default function KYC() {
 
         const sectionCls = addrVerified
           ? "border-emerald-200 bg-emerald-50/40"
-          : addrFailed
+          : addrNotVerified
           ? "border-red-200 bg-red-50/40"
+          : addrFailed
+          ? "border-orange-200 bg-orange-50/40"
           : addrQoreidPending
           ? "border-blue-100 bg-blue-50/30"
           : "border-[#E8DED5] bg-white";
 
         const iconCls = addrVerified
           ? "bg-emerald-50 text-emerald-600"
-          : addrFailed
+          : addrNotVerified
           ? "bg-red-50 text-red-600"
+          : addrFailed
+          ? "bg-orange-50 text-orange-600"
           : addrQoreidPending
           ? "bg-blue-50 text-blue-600"
           : "bg-[#FFF8EA] text-[#8B6A39]";
 
         const description = addrVerified
           ? "Your business address has been verified by QoreID."
+          : addrNotVerified
+          ? "A QoreID agent visited your workplace address and could not confirm it. Please update your address and try again."
           : addrFailed
-          ? "Your address could not be verified. Please contact support or update your address and try again."
+          ? "We couldn't submit your address for verification due to a technical issue. Review your address below and resend it to QoreID."
           : addrQoreidPending
           ? "A QoreID agent has been dispatched to verify your workplace address. This usually takes 1–2 business days. You'll be notified by email when it's done."
           : addrSaved
@@ -410,6 +504,12 @@ export default function KYC() {
                   </span>
                 </div>
                 <p className="mt-1 text-xs text-neutral-600 leading-5">{description}</p>
+                {addrFailed && (
+                  <Button variant="secondary" size="sm" onClick={openAddressRetryModal}
+                    className="mt-3 inline-flex items-center gap-2">
+                    <RefreshCw size={13} /> Edit Address & Resend to QoreID
+                  </Button>
+                )}
               </div>
             </div>
           </section>
@@ -534,7 +634,13 @@ export default function KYC() {
                   </label>
                   <select
                     className="w-full rounded-xl border border-surface-400 bg-white px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-gold transition-all"
-                    required value={state} onChange={(e) => setState(e.target.value)}
+                    required value={state}
+                    onChange={(e) => {
+                      setState(e.target.value);
+                      // LGA is scoped to state — a value valid for the old state
+                      // may not exist under the new one, so clear it on change.
+                      setLgaName("");
+                    }}
                   >
                     <option value="">Select state</option>
                     {NG_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -552,16 +658,23 @@ export default function KYC() {
                 </div>
               </div>
 
-              {/* LGA */}
+              {/* LGA — scoped to the selected state so a mismatched pair (e.g.
+                  LGA "Surulere" under state "Ekiti") can't be submitted; QoreID
+                  rejects those as invalid address location data. */}
               <div>
                 <label className="block text-xs font-semibold text-neutral-800 mb-1.5">
                   LGA (Local Government Area) <span className="text-danger">*</span>
                 </label>
-                <input
-                  className="w-full rounded-xl border border-surface-400 bg-white px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-gold transition-all"
-                  required placeholder="e.g. Surulere"
+                <select
+                  className="w-full rounded-xl border border-surface-400 bg-white px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-gold transition-all disabled:bg-surface-100 disabled:text-neutral-400"
+                  required disabled={!state}
                   value={lgaName} onChange={(e) => setLgaName(e.target.value)}
-                />
+                >
+                  <option value="">{state ? "Select LGA" : "Select a state first"}</option>
+                  {(NIGERIA_STATE_LGAS[state] || []).map((lga) => (
+                    <option key={lga} value={lga}>{lga}</option>
+                  ))}
+                </select>
               </div>
 
               {/* Street address */}
@@ -588,6 +701,19 @@ export default function KYC() {
                 />
               </div>
 
+              {/* Phone — QoreID's agent will call this number */}
+              <div>
+                <PhoneInput
+                  label="Phone Number for Verification *"
+                  name="addressPhone"
+                  value={addressPhone}
+                  onChange={(e) => setAddressPhone(e.target.value)}
+                />
+                <p className="mt-1 text-xs text-neutral-500">
+                  QoreID's field agent will call this number to arrange or confirm the visit to your address.
+                </p>
+              </div>
+
               <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-700">
                 <MapPin size={14} className="shrink-0 mt-0.5" />
                 <span>
@@ -611,7 +737,7 @@ export default function KYC() {
           )}
 
           {/* ── STEP 3: Bank Details (Paystack verified) ── */}
-          {step === 3 && (
+          {step === 3 && !bankOtp.required && (
             <form onSubmit={handleStep3} className="space-y-4">
               <p className="text-sm text-neutral-600">
                 Add your bank account so you can receive payouts for completed jobs.
@@ -633,8 +759,8 @@ export default function KYC() {
                     onChange={handleBankSelect}
                   >
                     <option value="">Select your bank</option>
-                    {banks.map((b) => (
-                      <option key={b.code} value={b.code}>{b.name}</option>
+                    {banks.map((b, i) => (
+                      <option key={b.id ?? `${b.code}-${i}`} value={b.code}>{b.name}</option>
                     ))}
                   </select>
                 </div>
@@ -728,6 +854,50 @@ export default function KYC() {
                 </Button>
               </div>
             </form>
+          )}
+
+          {/* ── STEP 3b: Confirm Bank Details via Email OTP ── */}
+          {step === 3 && bankOtp.required && (
+            <div className="space-y-4">
+              <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-700">
+                <ShieldCheck size={14} className="shrink-0 mt-0.5" />
+                <span>Check your email for a 6-digit code and enter it below to confirm this change.</span>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-neutral-800 mb-1.5">
+                  One-Time Password (OTP)
+                </label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  autoFocus
+                  value={bankOtp.code}
+                  onChange={(e) => setBankOtp((p) => ({ ...p, code: e.target.value.replace(/\D/g, "") }))}
+                  placeholder="e.g. 123456"
+                  className="w-full rounded-xl border border-surface-400 bg-white px-4 py-3.5 text-center text-2xl font-extrabold tracking-[0.5em] text-ink outline-none focus:border-gold focus:ring-2 focus:ring-gold/30 transition"
+                />
+              </div>
+
+              {bankOtp.error && <ErrorBox msg={bankOtp.error} />}
+
+              <div className="flex gap-3">
+                <BackButton onClick={() => setBankOtp({ required: false, code: "", error: "" })} />
+                <Button
+                  type="button"
+                  variant="primary"
+                  fullWidth
+                  disabled={submitting || bankOtp.code.length < 4}
+                  onClick={handleBankOtpConfirm}
+                >
+                  {submitting
+                    ? <Spinner text="Confirming..." />
+                    : <span className="flex items-center justify-center gap-2">Confirm OTP <CheckCircle2 size={16} /></span>
+                  }
+                </Button>
+              </div>
+            </div>
           )}
 
         </div>

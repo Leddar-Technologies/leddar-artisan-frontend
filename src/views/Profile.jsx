@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateProfile } from "../redux/slices/authSlice";
+import { updateArtisanProfile } from "../redux/slices/authSlice";
 import apiClient from "../services/apiClient";
 import {
   Card, CardContent, CardHeader, CardTitle,
@@ -11,6 +11,7 @@ import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import PhoneInput from "../components/ui/PhoneInput";
 import Badge from "../components/ui/Badge";
+import Modal from "../components/ui/Modal";
 import {
   User, Building2, Save, Upload, Loader2, CheckCircle2, AlertCircle, ShieldCheck,
 } from "lucide-react";
@@ -21,9 +22,10 @@ export default function Profile() {
   const { user } = useSelector((state) => state.auth);
 
   const [profileData, setProfileData] = useState({
-    fullName:  user?.fullName  || "",
-    specialty: user?.specialty || "",
-    whatsapp:  user?.whatsapp  || "",
+    fullName:    user?.fullName    || "",
+    specialty:   user?.specialty   || "",
+    producesFor: user?.producesFor || "",
+    whatsapp:    user?.whatsapp    || "",
   });
 
   const [bankData, setBankData] = useState({
@@ -46,16 +48,22 @@ export default function Profile() {
   const [bankSaving, setBankSaving] = useState(false);
   const [bankSuccess, setBankSuccess] = useState(false);
   const [bankError, setBankError]   = useState("");
+  const [bankOtpModal, setBankOtpModal] = useState({ open: false, otp: "", error: "" });
 
   const [portfolioImages, setPortfolioImages] = useState(user?.portfolioImages || []);
   const [portfolioError, setPortfolioError]   = useState("");
 
+  const [profileSaving, setProfileSaving]   = useState(false);
+  const [profileSuccess, setProfileSuccess] = useState(false);
+  const [profileError, setProfileError]     = useState("");
+
   useEffect(() => {
     if (user) {
       setProfileData({
-        fullName:  user.fullName  || "",
-        specialty: user.specialty || "",
-        whatsapp:  user.whatsapp  || "",
+        fullName:    user.fullName    || "",
+        specialty:   user.specialty   || "",
+        producesFor: user.producesFor || "",
+        whatsapp:    user.whatsapp    || "",
       });
       const savedAccount = user.bankAccount?.accountName || "";
       setBankData({
@@ -132,9 +140,20 @@ export default function Profile() {
     }
   };
 
-  const handleProfileSubmit = (e) => {
+  const handleProfileSubmit = async (e) => {
     e.preventDefault();
-    dispatch(updateProfile({ ...profileData, portfolioImages }));
+    setProfileSaving(true);
+    setProfileError("");
+    setProfileSuccess(false);
+    try {
+      await dispatch(updateArtisanProfile(profileData)).unwrap();
+      setProfileSuccess(true);
+      setTimeout(() => setProfileSuccess(false), 4000);
+    } catch (err) {
+      setProfileError(typeof err === "string" ? err : "Failed to update profile.");
+    } finally {
+      setProfileSaving(false);
+    }
   };
 
   const handlePortfolioChange = async (e) => {
@@ -192,11 +211,38 @@ export default function Profile() {
     setBankError("");
     setBankSuccess(false);
     try {
-      await apiClient.put("/artisans/bank-details", bankData);
+      const res = await apiClient.put("/artisans/bank-details", bankData);
+      if (res.data.requiresOtp) {
+        setBankOtpModal({ open: true, otp: "", error: "" });
+      } else {
+        setBankSuccess(true);
+        setTimeout(() => setBankSuccess(false), 4000);
+      }
+    } catch (err) {
+      setBankError(err.response?.data?.message || "Failed to save bank details.");
+    } finally {
+      setBankSaving(false);
+    }
+  };
+
+  const handleBankOtpConfirm = async () => {
+    if (!bankOtpModal.otp.trim()) {
+      setBankOtpModal((p) => ({ ...p, error: "Enter the OTP from your email." }));
+      return;
+    }
+    setBankSaving(true);
+    setBankOtpModal((p) => ({ ...p, error: "" }));
+    try {
+      const res = await apiClient.put("/artisans/bank-details", { ...bankData, otp: bankOtpModal.otp.trim() });
+      if (res.data.requiresOtp) {
+        setBankOtpModal((p) => ({ ...p, error: "Still awaiting confirmation — request a new OTP and try again." }));
+        return;
+      }
+      setBankOtpModal({ open: false, otp: "", error: "" });
       setBankSuccess(true);
       setTimeout(() => setBankSuccess(false), 4000);
     } catch (err) {
-      setBankError(err.response?.data?.message || "Failed to save bank details.");
+      setBankOtpModal((p) => ({ ...p, error: err.response?.data?.message || "Incorrect OTP." }));
     } finally {
       setBankSaving(false);
     }
@@ -271,6 +317,19 @@ export default function Profile() {
                   <option value="OTHERS">Others</option>
                 </select>
               </div>
+              <div>
+                <label className="block text-sm font-medium text-stone-700 mb-1">Who do you produce for?</label>
+                <select
+                  value={profileData.producesFor}
+                  onChange={(e) => handleProfileChange("producesFor", e.target.value)}
+                  className="w-full px-4 py-2 border border-stone-300 rounded-lg outline-none"
+                >
+                  <option value="">Select category</option>
+                  <option value="MALE">Male Wear</option>
+                  <option value="FEMALE">Female Wear</option>
+                  <option value="UNISEX">Unisex / Both</option>
+                </select>
+              </div>
             </div>
 
             {/* Portfolio */}
@@ -299,8 +358,23 @@ export default function Profile() {
               </div>
             </div>
 
-            <Button type="submit" variant="primary" className="ml-auto flex items-center gap-2">
-              <Save size={18} /> Save Profile
+            {profileError && <p className="text-sm text-red-500">{profileError}</p>}
+            {profileSuccess && (
+              <p className="flex items-center gap-2 text-sm font-semibold text-emerald-600">
+                <CheckCircle2 className="h-4 w-4" /> Profile saved successfully.
+              </p>
+            )}
+
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={profileSaving}
+              className="ml-auto flex items-center gap-2"
+            >
+              {profileSaving
+                ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving...</>
+                : <><Save size={18} /> Save Profile</>
+              }
             </Button>
           </CardContent>
         </Card>
@@ -314,7 +388,8 @@ export default function Profile() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-stone-600">
-              Required for receiving payments. Your account number is verified with Paystack before saving.
+              Required for receiving payments. Your account number is verified with Paystack before saving,
+              and changes are confirmed with a one-time code sent to your email.
             </p>
 
             {/* Bank dropdown */}
@@ -330,8 +405,8 @@ export default function Profile() {
                   required
                 >
                   <option value="">Select bank</option>
-                  {banks.map((b) => (
-                    <option key={b.code} value={b.code}>{b.name}</option>
+                  {banks.map((b, i) => (
+                    <option key={b.id ?? `${b.code}-${i}`} value={b.code}>{b.name}</option>
                   ))}
                 </select>
               ) : (
@@ -443,6 +518,63 @@ export default function Profile() {
           </CardContent>
         </Card>
       </form>
+
+      {/* OTP confirmation modal */}
+      <Modal
+        title="Confirm Bank Details Change"
+        open={bankOtpModal.open}
+        onClose={() => setBankOtpModal({ open: false, otp: "", error: "" })}
+      >
+        <div className="space-y-4">
+          <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+            <AlertCircle className="h-4 w-4 mt-0.5 shrink-0 text-amber-600" />
+            <p className="text-sm text-amber-800">
+              Check your email for a 6-digit code and enter it below to confirm this change.
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wide text-stone-500 mb-1.5">
+              One-Time Password (OTP)
+            </label>
+            <input
+              type="text"
+              inputMode="numeric"
+              maxLength={6}
+              autoFocus
+              value={bankOtpModal.otp}
+              onChange={(e) => setBankOtpModal((p) => ({ ...p, otp: e.target.value.replace(/\D/g, "") }))}
+              placeholder="e.g. 123456"
+              className="w-full rounded-xl border border-stone-300 bg-stone-50 px-4 py-3.5 text-center text-2xl font-extrabold tracking-[0.5em] text-stone-900 outline-none focus:border-amber-700 focus:ring-2 focus:ring-amber-700/20 transition"
+            />
+          </div>
+
+          {bankOtpModal.error && (
+            <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <AlertCircle className="h-4 w-4 shrink-0" /> {bankOtpModal.error}
+            </div>
+          )}
+
+          <div className="flex gap-3">
+            <button
+              onClick={handleBankOtpConfirm}
+              disabled={bankSaving || bankOtpModal.otp.length < 4}
+              className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-amber-700 py-3 text-sm font-bold text-white hover:bg-amber-800 disabled:opacity-50 transition-colors shadow-sm"
+            >
+              {bankSaving
+                ? <><Loader2 className="h-4 w-4 animate-spin" /> Verifying…</>
+                : <><CheckCircle2 className="h-4 w-4" /> Confirm OTP</>
+              }
+            </button>
+            <button
+              onClick={() => setBankOtpModal({ open: false, otp: "", error: "" })}
+              className="flex-1 rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm font-medium text-stone-900 hover:bg-stone-50 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

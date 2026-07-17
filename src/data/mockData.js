@@ -9,7 +9,7 @@ export const mockUser = {
   email: "john.adebayo@example.com",
   phone: "+234 801 234 5678",
   whatsapp: "+234 801 234 5678",
-  productionGender: "both",
+  producesFor: "UNISEX",
   specialty: "Footwear",
   kycStatus: "verified",
   location: "Lagos, Nigeria",

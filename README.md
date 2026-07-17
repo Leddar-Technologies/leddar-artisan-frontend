@@ -104,7 +104,7 @@ The dashboard shows a 3-step progress tracker. The Jobs page shows a banner list
 
 When an artisan accepts a job for the first time, the server automatically submits the saved address to QoreID for physical verification. A QoreID agent visits the address in person — this is **not instant**.
 
-The result arrives asynchronously via the QoreID webhook on the server (`POST /api/v1/webhooks/qoreid`). The artisan's `addressStatus` is then updated to `VERIFIED` or `FAILED` by the server, and the artisan receives an in-app notification.
+The result arrives asynchronously via the QoreID webhook on the server (`POST /api/v1/webhooks/qoreid`). The artisan's `addressStatus` is then updated to `VERIFIED` or `NOT_VERIFIED` (agent visited but couldn't confirm the address) by the server, and the artisan receives an in-app notification. A separate `FAILED` status covers the case where the server couldn't even submit the check to QoreID (technical/network issue), set earlier when the job is first accepted.
 
 This verification **never blocks** job acceptance — the artisan can work normally while it is pending.
 

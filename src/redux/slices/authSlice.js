@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import apiClient from "../../services/apiClient";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
@@ -51,6 +52,20 @@ export const resendVerification = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.error || "Failed to resend verification email",
+      );
+    }
+  },
+);
+
+export const updateArtisanProfile = createAsyncThunk(
+  "auth/updateArtisanProfile",
+  async (profileData, { rejectWithValue }) => {
+    try {
+      const response = await apiClient.patch("/profile/artisan", profileData);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to update profile",
       );
     }
   },
@@ -154,6 +169,24 @@ const authSlice = createSlice({
         };
       })
       .addCase(updateKYC.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Update Artisan Profile
+      .addCase(updateArtisanProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateArtisanProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        if (state.user) {
+          state.user = { ...state.user, ...action.payload.data };
+          if (typeof window !== "undefined") {
+            localStorage.setItem("user", JSON.stringify(state.user));
+          }
+        }
+      })
+      .addCase(updateArtisanProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

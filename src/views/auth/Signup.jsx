@@ -32,7 +32,7 @@ export default function Signup() {
 
   const [formData, setFormData] = useState({
     fullName: "",
-    productionGender: "",
+    producesFor: "",
     email: "",
     whatsapp: "",
     capacityPerWeek: "",
@@ -64,9 +64,9 @@ export default function Signup() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const PRODUCTION_OPTIONS = [
-    { value: "male",   label: "Male Wear" },
-    { value: "female", label: "Female Wear" },
-    { value: "both",   label: "Unisex / Both" },
+    { value: "MALE",   label: "Male Wear" },
+    { value: "FEMALE", label: "Female Wear" },
+    { value: "UNISEX", label: "Unisex / Both" },
   ];
   const [genderOpen, setGenderOpen] = useState(false);
   const genderRef = useRef(null);
@@ -84,7 +84,9 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const RESEND_COOLDOWN_SECONDS = 10 * 60;
+  // Matches the verification link's own 1-hour expiry (server: auth.service.js) —
+  // no point letting the user request a new one before the current one has expired.
+  const RESEND_COOLDOWN_SECONDS = 60 * 60;
   const [resendStatus, setResendStatus] = useState("idle"); // idle | sending
   const [resendMessage, setResendMessage] = useState("");
   const [cooldown, setCooldown] = useState(0);
@@ -125,8 +127,8 @@ export default function Signup() {
     let newErrors = {};
 
     if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
-    if (!formData.productionGender)
-      newErrors.productionGender = "Please select a production category";
+    if (!formData.producesFor)
+      newErrors.producesFor = "Please select a production category";
     if (selectedSpecialties.length === 0)
       newErrors.specialty = "Please select at least one specialty";
     if (!formData.whatsapp.trim()) {
@@ -323,15 +325,15 @@ export default function Signup() {
                       type="button"
                       onClick={() => setGenderOpen((o) => !o)}
                       className={`w-full flex items-center justify-between px-4 py-2.5 border rounded-xl outline-none transition-all focus:ring-2 focus:ring-[#8B4513]/30 focus:border-leather text-base leading-6 ${
-                        errors.productionGender
+                        errors.producesFor
                           ? "border-danger bg-red-50"
-                          : formData.productionGender
+                          : formData.producesFor
                           ? "border-leather bg-[#FDF5EE] text-neutral-900"
                           : "border-surface-500 bg-white text-neutral-400"
                       } ${genderOpen ? "ring-2 ring-[#8B4513]/30 border-leather" : ""}`}
                     >
                       <span>
-                        {PRODUCTION_OPTIONS.find(o => o.value === formData.productionGender)?.label || "Select Category"}
+                        {PRODUCTION_OPTIONS.find(o => o.value === formData.producesFor)?.label || "Select Category"}
                       </span>
                       <ChevronDown
                         size={16}
@@ -342,13 +344,13 @@ export default function Signup() {
                     {genderOpen && (
                       <div className="absolute z-50 mt-1 w-full rounded-xl border border-surface-400 bg-white shadow-xl overflow-hidden">
                         {PRODUCTION_OPTIONS.map((opt, i) => {
-                          const isSelected = formData.productionGender === opt.value;
+                          const isSelected = formData.producesFor === opt.value;
                           return (
                             <button
                               key={opt.value}
                               type="button"
                               onClick={() => {
-                                handleChange("productionGender", opt.value);
+                                handleChange("producesFor", opt.value);
                                 setGenderOpen(false);
                               }}
                               className={`w-full flex items-center justify-between px-4 py-3 text-sm transition-colors ${
@@ -365,7 +367,7 @@ export default function Signup() {
                       </div>
                     )}
                   </div>
-                  <ErrorMsg message={errors.productionGender} />
+                  <ErrorMsg message={errors.producesFor} />
                 </div>
               </div>
 
