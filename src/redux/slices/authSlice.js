@@ -75,7 +75,7 @@ export const updateKYC = createAsyncThunk(
   "auth/updateKYC",
   async (kycData, { rejectWithValue }) => {
     try {
-      const response = await axios.patch(`${API_URL}/artisan/kyc`, kycData);
+      const response = await apiClient.patch("/artisan/kyc", kycData);
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.error || "KYC update failed");

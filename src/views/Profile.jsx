@@ -11,11 +11,49 @@ import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import PhoneInput from "../components/ui/PhoneInput";
 import Badge from "../components/ui/Badge";
-import Modal from "../components/ui/Modal";
 import {
-  User, Building2, Save, Upload, Loader2, CheckCircle2, AlertCircle, ShieldCheck,
+  User, Building2, Save, Loader2, CheckCircle2, AlertCircle,
+  ShieldCheck, MapPin, Briefcase, Fingerprint, Image as ImageIcon,
 } from "lucide-react";
 
+const SPECIALTY_LABEL = {
+  SHOES_AND_BOOTS:        "Shoes & Boots",
+  SLIPPERS_AND_SANDALS:   "Slippers & Sandals",
+  WOMEN_BAGS:             "Women Bags",
+  OFFICE_AND_TRAVEL_BAGS: "Office & Travel Bags",
+  WALLETS_AND_BELTS:      "Wallets & Belts",
+  SMALL_LEATHER_GOODS:    "Small Leather Goods",
+  LEATHER_WEARS:          "Leather Wears",
+  OTHERS:                 "Others",
+};
+
+const PRODUCES_FOR_LABEL = { MALE: "Male Wear", FEMALE: "Female Wear", UNISEX: "Unisex / Both" };
+
+const KYC_BADGE_VARIANT = {
+  VERIFIED:     "success",
+  IN_PROGRESS:  "warning",
+  PENDING:      "warning",
+  FAILED:       "danger",
+  NOT_VERIFIED: "danger",
+};
+
+const maskTail = (value, visible = 4) => {
+  if (!value) return null;
+  const str = String(value);
+  if (str.length <= visible) return str;
+  return "•".repeat(str.length - visible) + str.slice(-visible);
+};
+
+const formatDate = (d) => d ? new Date(d).toLocaleDateString("en-NG", { year: "numeric", month: "long", day: "numeric" }) : "—";
+
+function InfoRow({ label, value }) {
+  return (
+    <div>
+      <p className="text-xs uppercase tracking-wide text-stone-500">{label}</p>
+      <p className="mt-0.5 text-sm font-medium text-stone-900">{value ?? "—"}</p>
+    </div>
+  );
+}
 
 export default function Profile() {
   const dispatch = useDispatch();
@@ -28,34 +66,14 @@ export default function Profile() {
     whatsapp:    user?.whatsapp    || "",
   });
 
-  const [bankData, setBankData] = useState({
-    bankName:      user?.bankAccount?.bankName      || "",
-    bankCode:      user?.bankAccount?.bankCode      || "",
-    accountName:   user?.bankAccount?.accountName   || "",
-    accountNumber: user?.bankAccount?.accountNumber || "",
-  });
-
-  // Account verification state
-  const [verifyState, setVerifyState] = useState(
-    // If user already has saved bank details, treat as pre-verified
-    user?.bankAccount?.accountName ? "verified" : "idle",
-  );
-  const [resolvedName, setResolvedName] = useState(user?.bankAccount?.accountName || "");
-  const [verifyError, setVerifyError]   = useState("");
-
-  const [banks, setBanks]           = useState([]);
-  const [banksLoading, setBanksLoading] = useState(false);
-  const [bankSaving, setBankSaving] = useState(false);
-  const [bankSuccess, setBankSuccess] = useState(false);
-  const [bankError, setBankError]   = useState("");
-  const [bankOtpModal, setBankOtpModal] = useState({ open: false, otp: "", error: "" });
-
-  const [portfolioImages, setPortfolioImages] = useState(user?.portfolioImages || []);
-  const [portfolioError, setPortfolioError]   = useState("");
-
   const [profileSaving, setProfileSaving]   = useState(false);
   const [profileSuccess, setProfileSuccess] = useState(false);
   const [profileError, setProfileError]     = useState("");
+
+  // Full profile — everything the app has actually collected, fetched fresh
+  // from the server rather than relying on the sparse login payload in redux.
+  const [fullProfile, setFullProfile] = useState(null);
+  const [fullProfileLoading, setFullProfileLoading] = useState(true);
 
   useEffect(() => {
     if (user) {
@@ -65,80 +83,29 @@ export default function Profile() {
         producesFor: user.producesFor || "",
         whatsapp:    user.whatsapp    || "",
       });
-      const savedAccount = user.bankAccount?.accountName || "";
-      setBankData({
-        bankName:      user.bankAccount?.bankName      || "",
-        bankCode:      user.bankAccount?.bankCode      || "",
-        accountName:   savedAccount,
-        accountNumber: user.bankAccount?.accountNumber || "",
-      });
-      // Treat already-saved bank details as pre-verified
-      if (savedAccount) {
-        setVerifyState("verified");
-        setResolvedName(savedAccount);
-      }
-      setPortfolioImages(user.portfolioImages || []);
     }
   }, [user]);
 
-  // Load bank list from Paystack via backend
   useEffect(() => {
-    setBanksLoading(true);
-    apiClient.get("/artisans/banks", {
-    })
-      .then((res) => setBanks(res.data.data || []))
-      .catch(() => {/* silently fail — artisan can type manually */})
-      .finally(() => setBanksLoading(false));
+    setFullProfileLoading(true);
+    apiClient.get("/artisans/me")
+      .then((res) => {
+        const data = res.data.data;
+        setFullProfile(data);
+        // Prefer the authoritative fetched profile to seed the edit form
+        setProfileData({
+          fullName:    data.fullName    || "",
+          specialty:   Array.isArray(data.specialty) ? data.specialty[0] || "" : data.specialty || "",
+          producesFor: data.producesFor || "",
+          whatsapp:    data.whatsapp    || "",
+        });
+      })
+      .catch(() => {/* fall back silently to redux user data already seeded above */})
+      .finally(() => setFullProfileLoading(false));
   }, []);
 
   const handleProfileChange = (field, value) =>
     setProfileData((p) => ({ ...p, [field]: value }));
-
-  const handleBankChange = (field, value) => {
-    setBankData((p) => ({ ...p, [field]: value }));
-    if (field === "bankCode") {
-      // Auto-fill bankName when selecting from dropdown; reset verification
-      const found = banks.find((b) => b.code === value);
-      if (found) setBankData((p) => ({ ...p, bankCode: value, bankName: found.name }));
-      resetVerification();
-    }
-    if (field === "accountNumber") {
-      resetVerification();
-    }
-  };
-
-  const resetVerification = () => {
-    setVerifyState("idle");
-    setResolvedName("");
-    setVerifyError("");
-  };
-
-  // Auto-verify when account number is exactly 10 digits and bank is selected
-  const handleAccountNumberChange = (e) => {
-    const val = e.target.value.replace(/\D/g, "").slice(0, 10); // digits only, max 10
-    setBankData((p) => ({ ...p, accountNumber: val }));
-    resetVerification();
-    if (val.length === 10 && bankData.bankCode) {
-      verifyAccount(val, bankData.bankCode);
-    }
-  };
-
-  const verifyAccount = async (accountNumber, bankCode) => {
-    setVerifyState("loading");
-    setVerifyError("");
-    try {
-      const res = await apiClient.get("/artisans/bank/resolve", {
-        params: { account_number: accountNumber, bank_code: bankCode },
-      });
-      const name = res.data.data.accountName;
-      setResolvedName(name);
-      setBankData((p) => ({ ...p, accountName: name }));
-      setVerifyState("verified");
-    } catch (err) {
-      setVerifyError(err.response?.data?.message || "Account not found. Check the number and bank.");
-      setVerifyState("error");
-    }
-  };
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
@@ -156,97 +123,10 @@ export default function Profile() {
     }
   };
 
-  const handlePortfolioChange = async (e) => {
-    setPortfolioError("");
-    const files = Array.from(e.target.files || []);
-    if (!files.length) return;
-    if (files.length + portfolioImages.length > 4) {
-      setPortfolioError("Maximum 4 images allowed");
-      return;
-    }
-    const valid = files.filter((f) => {
-      if (!["image/jpeg", "image/png"].includes(f.type)) {
-        setPortfolioError("Only JPG and PNG formats are allowed");
-        return false;
-      }
-      if (f.size > 5 * 1024 * 1024) {
-        setPortfolioError("Each image must be less than 5MB");
-        return false;
-      }
-      return true;
-    });
-    if (valid.length !== files.length) return;
-    const urls = await Promise.all(valid.map((f) =>
-      new Promise((res, rej) => {
-        const r = new FileReader();
-        r.onload = () => res(r.result);
-        r.onerror = () => rej(new Error("Could not read file"));
-        r.readAsDataURL(f);
-      })
-    ));
-    setPortfolioImages((prev) => [...prev, ...urls]);
-  };
-
-  const removePortfolioImage = (i) => {
-    const remaining = portfolioImages.filter((_, idx) => idx !== i);
-    setPortfolioImages(remaining);
-    if (remaining.length >= 3) setPortfolioError("");
-  };
-
-  const handleBankSubmit = async (e) => {
-    e.preventDefault();
-    if (!bankData.bankCode) {
-      setBankError("Please select your bank.");
-      return;
-    }
-    if (!bankData.accountNumber) {
-      setBankError("Please enter your account number.");
-      return;
-    }
-    if (verifyState !== "verified") {
-      setBankError("Please verify your account number before saving.");
-      return;
-    }
-    setBankSaving(true);
-    setBankError("");
-    setBankSuccess(false);
-    try {
-      const res = await apiClient.put("/artisans/bank-details", bankData);
-      if (res.data.requiresOtp) {
-        setBankOtpModal({ open: true, otp: "", error: "" });
-      } else {
-        setBankSuccess(true);
-        setTimeout(() => setBankSuccess(false), 4000);
-      }
-    } catch (err) {
-      setBankError(err.response?.data?.message || "Failed to save bank details.");
-    } finally {
-      setBankSaving(false);
-    }
-  };
-
-  const handleBankOtpConfirm = async () => {
-    if (!bankOtpModal.otp.trim()) {
-      setBankOtpModal((p) => ({ ...p, error: "Enter the OTP from your email." }));
-      return;
-    }
-    setBankSaving(true);
-    setBankOtpModal((p) => ({ ...p, error: "" }));
-    try {
-      const res = await apiClient.put("/artisans/bank-details", { ...bankData, otp: bankOtpModal.otp.trim() });
-      if (res.data.requiresOtp) {
-        setBankOtpModal((p) => ({ ...p, error: "Still awaiting confirmation — request a new OTP and try again." }));
-        return;
-      }
-      setBankOtpModal({ open: false, otp: "", error: "" });
-      setBankSuccess(true);
-      setTimeout(() => setBankSuccess(false), 4000);
-    } catch (err) {
-      setBankOtpModal((p) => ({ ...p, error: err.response?.data?.message || "Incorrect OTP." }));
-    } finally {
-      setBankSaving(false);
-    }
-  };
+  const specialties = Array.isArray(fullProfile?.specialty) ? fullProfile.specialty : [];
+  const kyc = fullProfile?.user?.kyc || null;
+  const bank = fullProfile?.bankDetail || null;
+  const portfolio = fullProfile?.portfolio || [];
 
   return (
     <div className="space-y-6">
@@ -259,20 +139,27 @@ export default function Profile() {
       <Card className="bg-gradient-to-r from-amber-50 to-stone-50 border-l-4 border-l-amber-700">
         <CardContent className="py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold text-stone-900 text-lg">{user?.fullName}</h3>
-              <p className="text-sm text-stone-600 mt-1">{user?.email}</p>
-              <p className="text-sm text-stone-600">{user?.specialty}</p>
+            <div className="flex gap-6">
+              <div>
+                <p className="text-xs text-stone-500 mb-1">Full Name</p>
+                <p className="text-sm font-bold text-stone-900">{fullProfile?.fullName || user?.fullName || "—"}</p>
+              </div>
+              <div>
+                <p className="text-xs text-stone-500 mb-1">Email</p>
+                <p className="text-sm font-bold text-stone-900">{fullProfile?.user?.email || user?.email || "—"}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-stone-500 mb-1">KYC Status</p>
-              <Badge variant={
-                user?.kycStatus === "verified" ? "success"
-                : user?.kycStatus === "pending" ? "warning"
-                : "danger"
-              }>
-                {user?.kycStatus || "Not Verified"}
-              </Badge>
+            <div className="flex gap-6 text-right">
+              <div>
+                <p className="text-xs text-stone-500 mb-1">Account Status</p>
+                <p className="text-sm font-bold text-stone-900">{fullProfile?.user?.status || "—"}</p>
+              </div>
+              <div>
+                <p className="text-xs text-stone-500 mb-1">Member Since</p>
+                <p className="text-sm font-bold text-stone-900">
+                  {fullProfile?.user?.createdAt ? formatDate(fullProfile.user.createdAt) : (fullProfile?.createdAt ? formatDate(fullProfile.createdAt) : "—")}
+                </p>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -307,14 +194,9 @@ export default function Profile() {
                   className="w-full px-4 py-2 border border-stone-300 rounded-lg outline-none"
                 >
                   <option value="">Select specialty</option>
-                  <option value="SHOES_AND_BOOTS">Shoes &amp; Boots</option>
-                  <option value="SLIPPERS_AND_SANDALS">Slippers &amp; Sandals</option>
-                  <option value="WOMEN_BAGS">Women Bags</option>
-                  <option value="OFFICE_AND_TRAVEL_BAGS">Office &amp; Travel Bags</option>
-                  <option value="WALLETS_AND_BELTS">Wallets &amp; Belts</option>
-                  <option value="SMALL_LEATHER_GOODS">Small Leather Goods</option>
-                  <option value="LEATHER_WEARS">Leather Wears</option>
-                  <option value="OTHERS">Others</option>
+                  {Object.entries(SPECIALTY_LABEL).map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
                 </select>
               </div>
               <div>
@@ -325,36 +207,10 @@ export default function Profile() {
                   className="w-full px-4 py-2 border border-stone-300 rounded-lg outline-none"
                 >
                   <option value="">Select category</option>
-                  <option value="MALE">Male Wear</option>
-                  <option value="FEMALE">Female Wear</option>
-                  <option value="UNISEX">Unisex / Both</option>
+                  {Object.entries(PRODUCES_FOR_LABEL).map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
                 </select>
-              </div>
-            </div>
-
-            {/* Portfolio */}
-            <div className="rounded-xl border border-stone-200 bg-stone-50 p-4">
-              <div className="mb-3 border-2 border-dashed border-stone-300 rounded-xl p-4 text-center">
-                <input id="p-upload" type="file" accept="image/*" multiple onChange={handlePortfolioChange} className="hidden" />
-                <label htmlFor="p-upload" className="cursor-pointer">
-                  <Upload className="mx-auto mb-2 text-stone-500" size={24} />
-                  <p className="text-sm font-medium">Upload portfolio images</p>
-                </label>
-              </div>
-              {portfolioError && <p className="text-xs text-red-500 mb-2">{portfolioError}</p>}
-              <div className="grid grid-cols-4 gap-3">
-                {portfolioImages.map((url, i) => (
-                  <div key={i} className="relative group">
-                    <img src={url} className="h-24 w-full rounded-lg object-cover" alt="" />
-                    <button
-                      type="button"
-                      onClick={() => removePortfolioImage(i)}
-                      className="absolute top-0 right-0 bg-red-600 text-white text-xs p-1 rounded opacity-0 group-hover:opacity-100"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
               </div>
             </div>
 
@@ -380,201 +236,135 @@ export default function Profile() {
         </Card>
       </form>
 
-      {/* Bank details form */}
-      <form onSubmit={handleBankSubmit}>
+      {/* ── Everything the app has collected — read-only ─────────────────── */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Briefcase size={20} /> Work Profile</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {fullProfileLoading ? (
+            <p className="text-sm text-stone-500 flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Loading collected information…</p>
+          ) : (
+            <>
+              <div>
+                <p className="text-xs uppercase tracking-wide text-stone-500 mb-1.5">Specialties</p>
+                {specialties.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {specialties.map((s) => (
+                      <span key={s} className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800">
+                        {SPECIALTY_LABEL[s] || s}
+                      </span>
+                    ))}
+                  </div>
+                ) : <p className="text-sm text-stone-400">—</p>}
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <InfoRow label="Produces For" value={PRODUCES_FOR_LABEL[fullProfile?.producesFor] || fullProfile?.producesFor} />
+                <InfoRow label="Weekly Capacity" value={fullProfile?.capacityPerWeek ? `${fullProfile.capacityPerWeek} units/week` : null} />
+                <InfoRow label="Team Size" value={fullProfile?.numberOfWorkers ? `${fullProfile.numberOfWorkers} worker(s)` : null} />
+              </div>
+              {fullProfile?.bio && (
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-stone-500 mb-1">Bio</p>
+                  <p className="text-sm text-stone-700">{fullProfile.bio}</p>
+                </div>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {portfolio.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Building2 size={20} /> Bank Details</CardTitle>
+            <CardTitle className="flex items-center gap-2"><ImageIcon size={20} /> Portfolio</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-stone-600">
-              Required for receiving payments. Your account number is verified with Paystack before saving,
-              and changes are confirmed with a one-time code sent to your email.
-            </p>
-
-            {/* Bank dropdown */}
-            <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">
-                Bank {banksLoading && <span className="text-xs text-stone-400 ml-1">(loading...)</span>}
-              </label>
-              {banks.length > 0 ? (
-                <select
-                  value={bankData.bankCode}
-                  onChange={(e) => handleBankChange("bankCode", e.target.value)}
-                  className="w-full px-4 py-2 border border-stone-300 rounded-lg outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-700"
-                  required
-                >
-                  <option value="">Select bank</option>
-                  {banks.map((b, i) => (
-                    <option key={b.id ?? `${b.code}-${i}`} value={b.code}>{b.name}</option>
-                  ))}
-                </select>
-              ) : (
-                <Input
-                  label=""
-                  placeholder="e.g. GTBank"
-                  value={bankData.bankName}
-                  onChange={(e) => handleBankChange("bankName", e.target.value)}
-                />
-              )}
+          <CardContent>
+            <div className="grid grid-cols-4 gap-3">
+              {portfolio.map((p, i) => (
+                <img key={p.id || i} src={p.file?.url} className="h-24 w-full rounded-lg object-cover" alt="" />
+              ))}
             </div>
+          </CardContent>
+        </Card>
+      )}
 
-            {/* Account Number — digits only, auto-verifies at 10 digits */}
-            <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">
-                Account Number
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="10-digit account number"
-                  value={bankData.accountNumber}
-                  onChange={handleAccountNumberChange}
-                  maxLength={10}
-                  className={`w-full px-4 py-2 pr-10 border rounded-lg outline-none focus:ring-2 transition-colors ${
-                    verifyState === "verified"
-                      ? "border-emerald-400 focus:ring-emerald-200 bg-emerald-50"
-                      : verifyState === "error"
-                      ? "border-red-400 focus:ring-red-100"
-                      : "border-stone-300 focus:ring-amber-700/20 focus:border-amber-700"
-                  }`}
-                  required
-                />
-                <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                  {verifyState === "loading" && (
-                    <Loader2 className="h-4 w-4 animate-spin text-amber-600" />
-                  )}
-                  {verifyState === "verified" && (
-                    <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                  )}
-                  {verifyState === "error" && (
-                    <AlertCircle className="h-4 w-4 text-red-500" />
-                  )}
-                </div>
-              </div>
-              <p className="mt-1 text-xs text-stone-400">
-                {bankData.accountNumber.length}/10 digits
-                {!bankData.bankCode && bankData.accountNumber.length > 0 && (
-                  <span className="ml-2 text-amber-600">— select a bank first</span>
-                )}
-              </p>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><MapPin size={20} /> Location</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid md:grid-cols-2 gap-4">
+            <InfoRow label="Work Address" value={fullProfile?.workAddress} />
+            <InfoRow label="Landmark" value={fullProfile?.landmark} />
+            <InfoRow label="Local Government Area" value={fullProfile?.lgaName} />
+            <InfoRow label="State" value={fullProfile?.state} />
+            <InfoRow label="City" value={fullProfile?.city} />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Fingerprint size={20} /> Identity Verification (KYC)</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-3">
+            <p className="text-xs uppercase tracking-wide text-stone-500">Overall Status</p>
+            <Badge variant={KYC_BADGE_VARIANT[kyc?.status] || "warning"}>{kyc?.status || "NOT_STARTED"}</Badge>
+          </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <InfoRow label="ID Type" value={kyc?.idType} />
+            <InfoRow label="Verified On" value={kyc?.verifiedAt ? formatDate(kyc.verifiedAt) : null} />
+          </div>
+          <div className="rounded-xl border border-stone-200 bg-stone-50 p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-semibold text-stone-800">NIN Verification</p>
+              <Badge variant={KYC_BADGE_VARIANT[kyc?.ninStatus] || "warning"}>{kyc?.ninStatus || "PENDING"}</Badge>
             </div>
+            <div className="grid md:grid-cols-3 gap-4">
+              <InfoRow label="Name on NIN" value={[kyc?.ninFirstName, kyc?.ninLastName].filter(Boolean).join(" ") || null} />
+              <InfoRow label="NIN Number" value={maskTail(kyc?.ninNumber)} />
+              <InfoRow label="Verified On" value={kyc?.ninVerifiedAt ? formatDate(kyc.ninVerifiedAt) : null} />
+            </div>
+          </div>
+          <div className="rounded-xl border border-stone-200 bg-stone-50 p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-semibold text-stone-800">Address Verification</p>
+              <Badge variant={KYC_BADGE_VARIANT[kyc?.addressStatus] || "warning"}>{kyc?.addressStatus || "PENDING"}</Badge>
+            </div>
+            <InfoRow label="Verified On" value={kyc?.addressVerifiedAt ? formatDate(kyc.addressVerifiedAt) : null} />
+          </div>
+        </CardContent>
+      </Card>
 
-            {/* Verification result */}
-            {verifyState === "loading" && (
-              <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-                <Loader2 className="h-4 w-4 animate-spin shrink-0" />
-                Verifying account with Paystack…
-              </div>
-            )}
-
-            {verifyState === "verified" && resolvedName && (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Building2 size={20} /> Bank Account</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {bank ? (
+            <>
               <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
                 <ShieldCheck className="h-5 w-5 shrink-0 text-emerald-600" />
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-emerald-600">Account Verified ✓</p>
-                  <p className="text-base font-bold text-stone-900">{resolvedName}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-emerald-600">
+                    {bank.isVerified ? "Account Verified ✓" : "Account on file"}
+                  </p>
+                  <p className="text-base font-bold text-stone-900">{bank.accountName}</p>
                 </div>
               </div>
-            )}
-
-            {verifyState === "error" && verifyError && (
-              <div className="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                {verifyError}
+              <div className="grid md:grid-cols-2 gap-4">
+                <InfoRow label="Bank" value={bank.bankName} />
+                <InfoRow label="Account Number" value={maskTail(bank.accountNumber, 4)} />
               </div>
-            )}
-
-            {/* Manual verify button — fallback if auto-verify didn't fire */}
-            {verifyState !== "verified" && verifyState !== "loading" && bankData.accountNumber.length === 10 && bankData.bankCode && (
-              <button
-                type="button"
-                onClick={() => verifyAccount(bankData.accountNumber, bankData.bankCode)}
-                className="text-sm font-semibold text-amber-700 underline underline-offset-2 hover:text-amber-800"
-              >
-                Retry verification
-              </button>
-            )}
-
-            {bankError && <p className="text-sm text-red-500">{bankError}</p>}
-            {bankSuccess && (
-              <p className="flex items-center gap-2 text-sm font-semibold text-emerald-600">
-                <CheckCircle2 className="h-4 w-4" /> Bank details saved successfully.
-              </p>
-            )}
-
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={bankSaving || verifyState !== "verified"}
-              className="ml-auto flex items-center gap-2"
-            >
-              {bankSaving
-                ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving...</>
-                : <><Save size={18} /> Save Bank Details</>
-              }
-            </Button>
-          </CardContent>
-        </Card>
-      </form>
-
-      {/* OTP confirmation modal */}
-      <Modal
-        title="Confirm Bank Details Change"
-        open={bankOtpModal.open}
-        onClose={() => setBankOtpModal({ open: false, otp: "", error: "" })}
-      >
-        <div className="space-y-4">
-          <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-            <AlertCircle className="h-4 w-4 mt-0.5 shrink-0 text-amber-600" />
-            <p className="text-sm text-amber-800">
-              Check your email for a 6-digit code and enter it below to confirm this change.
-            </p>
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wide text-stone-500 mb-1.5">
-              One-Time Password (OTP)
-            </label>
-            <input
-              type="text"
-              inputMode="numeric"
-              maxLength={6}
-              autoFocus
-              value={bankOtpModal.otp}
-              onChange={(e) => setBankOtpModal((p) => ({ ...p, otp: e.target.value.replace(/\D/g, "") }))}
-              placeholder="e.g. 123456"
-              className="w-full rounded-xl border border-stone-300 bg-stone-50 px-4 py-3.5 text-center text-2xl font-extrabold tracking-[0.5em] text-stone-900 outline-none focus:border-amber-700 focus:ring-2 focus:ring-amber-700/20 transition"
-            />
-          </div>
-
-          {bankOtpModal.error && (
-            <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              <AlertCircle className="h-4 w-4 shrink-0" /> {bankOtpModal.error}
-            </div>
+            </>
+          ) : (
+            <p className="text-sm text-stone-500">No bank account on file yet.</p>
           )}
-
-          <div className="flex gap-3">
-            <button
-              onClick={handleBankOtpConfirm}
-              disabled={bankSaving || bankOtpModal.otp.length < 4}
-              className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-amber-700 py-3 text-sm font-bold text-white hover:bg-amber-800 disabled:opacity-50 transition-colors shadow-sm"
-            >
-              {bankSaving
-                ? <><Loader2 className="h-4 w-4 animate-spin" /> Verifying…</>
-                : <><CheckCircle2 className="h-4 w-4" /> Confirm OTP</>
-              }
-            </button>
-            <button
-              onClick={() => setBankOtpModal({ open: false, otp: "", error: "" })}
-              className="flex-1 rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm font-medium text-stone-900 hover:bg-stone-50 transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </Modal>
+          <p className="text-xs text-stone-400">To add or change your payout account, use the Bank Details page in the sidebar.</p>
+        </CardContent>
+      </Card>
     </div>
   );
 }
