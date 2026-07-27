@@ -215,6 +215,11 @@ export default function BankDetails() {
 
   const hasExisting = !!dbDetail?.accountName;
 
+  const isDirty =
+    bankData.bankCode      !== (dbDetail?.bankCode      || "") ||
+    bankData.accountNumber !== (dbDetail?.accountNumber || "") ||
+    bankData.accountName   !== (dbDetail?.accountName   || "");
+
   return (
     <div className="max-w-xl space-y-6">
       <div>
@@ -412,7 +417,7 @@ export default function BankDetails() {
 
         <button
           type="submit"
-          disabled={saving || verifyState !== "verified"}
+          disabled={saving || verifyState !== "verified" || !isDirty}
           className="w-full flex items-center justify-center gap-2 rounded-xl bg-amber-700 px-4 py-3 text-sm font-bold text-white hover:bg-amber-800 disabled:opacity-50 transition-colors"
         >
           {saving
