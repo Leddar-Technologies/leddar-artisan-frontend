@@ -8,11 +8,10 @@ import {
   Card, CardContent, CardHeader, CardTitle,
 } from "../components/ui/Card";
 import Input from "../components/ui/Input";
-import Button from "../components/ui/Button";
 import PhoneInput from "../components/ui/PhoneInput";
 import Badge from "../components/ui/Badge";
 import {
-  User, Building2, Save, Loader2, CheckCircle2, AlertCircle,
+  User, Building2, Loader2, CheckCircle2, AlertCircle,
   ShieldCheck, MapPin, Briefcase, Fingerprint, Image as ImageIcon,
 } from "lucide-react";
 
@@ -220,18 +219,6 @@ export default function Profile() {
                 <CheckCircle2 className="h-4 w-4" /> Profile saved successfully.
               </p>
             )}
-
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={profileSaving}
-              className="ml-auto flex items-center gap-2"
-            >
-              {profileSaving
-                ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving...</>
-                : <><Save size={18} /> Save Profile</>
-              }
-            </Button>
           </CardContent>
         </Card>
       </form>

@@ -709,8 +709,10 @@ export default function JobDetails({ jobId, onBack }) {
             </CardContent>
           </Card>
 
-          {/* Payment status */}
-          {job.order?.payments?.length > 0 && (
+          {/* Payment status — only ever shows payments Paystack has actually confirmed;
+              a Payment row exists (status PENDING) the instant admin clicks "Release",
+              well before the transfer is confirmed, so it must be filtered here. */}
+          {job.order?.payments?.filter((p) => p.status === "RELEASED").length > 0 && (
             <Card className="border-emerald-200 bg-emerald-50/60">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-emerald-800 text-sm">
@@ -718,7 +720,7 @@ export default function JobDetails({ jobId, onBack }) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 pt-0">
-                {job.order.payments.map((p) => (
+                {job.order.payments.filter((p) => p.status === "RELEASED").map((p) => (
                   <div key={p.id} className="rounded-xl bg-white border border-emerald-100 p-3 space-y-1.5">
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-emerald-700 font-semibold uppercase tracking-wide">

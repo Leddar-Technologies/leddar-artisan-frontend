@@ -51,8 +51,9 @@ function formatNaira(n) {
 }
 
 function PaymentBadge({ payments = [] }) {
-  if (!payments.length) return null;
-  const total = payments.reduce((s, p) => s + p.amount, 0);
+  const released = payments.filter((p) => p.status === "RELEASED");
+  if (!released.length) return null;
+  const total = released.reduce((s, p) => s + p.amount, 0);
   return (
     <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-1 text-xs font-bold text-emerald-700">
       <Banknote size={12} /> Payment Released · {formatNaira(total)}
