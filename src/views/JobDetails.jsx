@@ -299,7 +299,6 @@ export default function JobDetails({ jobId, onBack }) {
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-ink">{job.productType}</h1>
               <p className="mt-1 text-sm text-neutral-600">
-                {job.order?.brand?.businessName && `Brand: ${job.order.brand.businessName} · `}
                 {job.ref || `#${job.id.slice(0, 8).toUpperCase()}`}
               </p>
             </div>
