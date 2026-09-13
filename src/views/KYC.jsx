@@ -170,7 +170,9 @@ export default function KYC() {
     setModalOpen(true);
   }
 
-  // Address submission failed for a technical reason (couldn't reach QoreID).
+  // Address submission failed for a technical reason (couldn't reach QoreID) —
+  // NOT_VERIFIED means an actual paid check already ran and is locked until an
+  // admin unlocks it, so this modal is only reachable from the FAILED state.
   // Let the artisan review/edit the address before resending — prefill Step 2
   // with what's on file instead of blanking it out.
   function openAddressRetryModal() {
@@ -481,7 +483,7 @@ export default function KYC() {
         const description = addrVerified
           ? "Your business address has been verified by QoreID."
           : addrNotVerified
-          ? "A QoreID agent visited your workplace address and could not confirm it. Please update your address and try again."
+          ? "A QoreID agent visited your workplace address and could not confirm it. This check has already run, so it can't be resent automatically — please contact support to review and re-open it."
           : addrFailed
           ? "We couldn't submit your address for verification due to a technical issue. Review your address below and resend it to QoreID."
           : addrQoreidPending
